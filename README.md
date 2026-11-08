@@ -65,3 +65,11 @@ The test loads a copy of `dist/ciaociao.html` (written to `tests/_test.html`) in
 - A wrong answer shows a feedback sheet with a replay button. Retries are unlimited.
 - Coins and stars reward progress through levels, and boss levels close out each world.
 - Phrases are scheduled for review on Leitner intervals of 1, 2, 4, 8, 16 and 32 days.
+
+## Home-screen app (GitHub Pages)
+
+`python3 scripts/build.py` also writes `docs/`: the same app wrapped as a standalone iPhone web app (`docs/index.html`, `manifest.webmanifest`, app icons from `scripts/make_icon.py`).
+
+To publish: in the repository's Settings, open Pages, set Source to "Deploy from a branch", pick `main` and `/docs`, and save. The app is then served at `https://leastmarble.github.io/CiaoCiao/`. On an iPhone, open that address in Safari and tap Share, then Add to Home Screen. Progress is stored on each phone. Home-screen apps are exempt from iOS's 7-day clean-up of website data.
+
+Test the Pages build with `TARGET=pages node tests/e2e.js`.
