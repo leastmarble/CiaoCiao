@@ -27,8 +27,8 @@ html[data-app="dark"]:root{
   --bg:#0C0F1E; --surface:#161A2E; --surface-2:#1D2240; --ink:#F2F4FF; --ink-2:#9BA3C6; --line:#2A3053; --locked:#30365A;
   --good-bg:#11301F; --bad-bg:#3A1715; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35); color-scheme:dark}
 
-html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent;overflow:hidden}
+html,body{height:100%;overscroll-behavior:none}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent;overflow:hidden}
 *{box-sizing:border-box}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
@@ -140,12 +140,12 @@ h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
 .flip{perspective:1400px;height:clamp(250px,44vh,340px);cursor:pointer}
 .flip-in{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
 .flipped .flip-in{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface);border-radius:26px;box-shadow:var(--shadow);padding:24px 22px;display:flex;flex-direction:column;justify-content:center;gap:12px}
-.face.back{transform:rotateY(180deg);background:linear-gradient(160deg,var(--surface),var(--surface-2))}
+.face{position:absolute;inset:0;transform:rotateY(0deg) translateZ(1px);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface);border-radius:26px;box-shadow:var(--shadow);padding:24px 22px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.face.back{transform:rotateY(180deg) translateZ(1px);background:linear-gradient(160deg,var(--surface),var(--surface-2))}
 .face .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);font-weight:700}
 
 /* sheet + popups */
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:up .28s cubic-bezier(.2,.8,.3,1);border-radius:28px 28px 0 0}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:20px max(16px,env(safe-area-inset-right,0px),var(--sar,0px)) calc(20px + max(env(safe-area-inset-bottom,0px),var(--sab,0px))) max(16px,env(safe-area-inset-left,0px),var(--sal,0px));animation:up .28s cubic-bezier(.2,.8,.3,1);border-radius:28px 28px 0 0}
 .sheet.good{background:var(--good-bg)} .sheet.bad{background:var(--bad-bg)} .sheet.plain{background:var(--surface);box-shadow:0 -10px 40px rgba(0,0,0,.2)}
 .sheet-in{max-width:528px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
 .sheet h3{font-size:26px;font-weight:700;display:flex;align-items:center;gap:10px}
@@ -155,7 +155,7 @@ h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 .scrim{position:fixed;inset:0;background:rgba(8,10,25,.45);z-index:25;animation:fade .2s}
 @keyframes fade{from{opacity:0}}
-.modal{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:88%;overflow-y:auto;background:var(--surface);border-radius:28px 28px 0 0;padding:22px max(18px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .28s cubic-bezier(.2,.8,.3,1)}
+.modal{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:88%;overflow-y:auto;background:var(--surface);border-radius:28px 28px 0 0;padding:22px max(18px,env(safe-area-inset-right,0px),var(--sar,0px)) calc(24px + max(env(safe-area-inset-bottom,0px),var(--sab,0px))) max(18px,env(safe-area-inset-left,0px),var(--sal,0px));animation:up .28s cubic-bezier(.2,.8,.3,1)}
 .modal-in{max-width:528px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
 .set-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-block:4px}
 .set-row div{min-width:0}
@@ -200,7 +200,10 @@ h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
 .field:focus{border-color:var(--sky)}
 .bubbles{display:flex;flex-wrap:wrap;gap:8px}
 .bubbles span{font-family:var(--display);font-weight:500;padding:8px 14px;border-radius:999px;color:#fff}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;font-size:15px;max-width:calc(100% - 32px);animation:fade .2s}
+.toast{position:fixed;left:50%;bottom:calc(24px + max(env(safe-area-inset-bottom,0px),var(--sab,0px)));transform:translateX(-50%);z-index:50;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;font-size:15px;max-width:calc(100% - 32px);animation:fade .2s}
+button,.flip{touch-action:manipulation}
+.scroll,.stage,.result,.welcome,.modal{overscroll-behavior:contain}
+.tile,.opt,.node,.flip,.btn,.abtn,.bigspk,.slowspk{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 
@@ -215,7 +218,7 @@ const WORLDS=[
 ["Buonasera.","Good evening.","From late afternoon on"],
 ["Piacere di conoscerla.","Pleased to meet you.","Formal (Lei)"],
 ["Come sta?","How are you?","Formal (Lei)"],
-["Bene, grazie. E lei?","Fine, thanks. And you?"],
+["Bene, grazie. E lei?","Fine, thanks. And you?","Formal (Lei)"],
 ["Mi chiamo…","My name is…","Then add your name"],
 ["Come si chiama?","What's your name?","Formal (Lei)"],
 ["Sono canadese.","I'm Canadian."],
@@ -255,14 +258,14 @@ const WORLDS=[
 {it:"Chiacchiere",en:"Small Talk",c1:"#7C4DFF",c2:"#D35CF0",wt:"#fff",p:[
 ["Di dov'è?","Where are you from?","Formal (Lei)"],
 ["Sono di Toronto.","I'm from Toronto."],
-["Che lavoro fa?","What do you do for work?"],
+["Che lavoro fa?","What do you do for work?","Formal (Lei)"],
 ["Sono ingegnere.","I'm an engineer."],
 ["Lavoro nel settore dei data center.","I work in the data centre sector."],
 ["Mi piace molto l'Italia.","I really like Italy."],
 ["Cosa fa nel tempo libero?","What do you do in your free time?"],
 ["Mi piace giocare a golf.","I like playing golf."],
 ["Che tempo fa oggi?","What's the weather like today?"],
-["Fa bel tempo.","The weather is nice."],
+["È la mia prima volta qui.","It's my first time here."],
 ["Com'è andato il viaggio?","How was your trip?"],
 ["È stato un piacere.","It was a pleasure."],
 ["Da quanto tempo vive qui?","How long have you lived here?"],
@@ -275,22 +278,22 @@ const WORLDS=[
 ["Ci vediamo domani.","See you tomorrow."]]},
 {it:"In Riunione",en:"In the Meeting",c1:"#15A353",c2:"#82D23A",wt:"#fff",p:[
 ["Possiamo cominciare?","Shall we begin?"],
-["Grazie per il suo tempo.","Thank you for your time."],
+["Grazie per la disponibilità.","Thank you for your time.","Literally: for your availability"],
 ["Qual è l'ordine del giorno?","What's the agenda?"],
 ["Le presento il mio collega.","Let me introduce my colleague."],
 ["Ho una riunione alle dieci.","I have a meeting at ten."],
 ["Sono d'accordo.","I agree."],
-["Non sono d'accordo.","I disagree."],
+["Non sono del tutto d'accordo.","I don't fully agree.","The diplomatic way to disagree"],
 ["Ha ragione.","You're right."],
-["Mi permetta di spiegare.","Allow me to explain."],
+["Le spiego.","Let me explain.","Formal (Lei)"],
 ["È una buona idea.","That's a good idea."],
 ["Qual è la scadenza?","What's the deadline?"],
-["Quali sono i prossimi passi?","What are the next steps?"],
+["Come procediamo?","How do we proceed? / Next steps?"],
 ["Ci penso io.","I'll take care of it."],
 ["Le mando un'email.","I'll send you an email."],
 ["Possiamo fissare un'altra riunione?","Can we schedule another meeting?"],
 ["Facciamo il punto della situazione.","Let's review where things stand."],
-["Ha qualche domanda?","Do you have any questions?"],
+["Ci sono domande?","Any questions?"],
 ["Le faccio sapere.","I'll let you know."],
 ["Riassumendo…","To sum up…"],
 ["Grazie a tutti.","Thank you, everyone."]]},
@@ -305,31 +308,31 @@ const WORLDS=[
 ["Possiamo ridurre i costi.","We can reduce costs."],
 ["Quali sono i tempi di consegna?","What are the delivery times?"],
 ["Dobbiamo rispettare i tempi.","We need to stay on schedule."],
-["Il progetto è nei tempi.","The project is on schedule."],
+["Siamo nei tempi.","We're on schedule."],
 ["Il progetto è in ritardo.","The project is behind schedule."],
-["Siamo un'azienda di ingegneria.","We are an engineering firm."],
+["Siamo una società di ingegneria.","We are an engineering firm."],
 ["Abbiamo molta esperienza in questo settore.","We have a lot of experience in this sector."],
 ["Qual è la potenza richiesta?","What's the required power capacity?"],
-["Mi manda il contratto?","Will you send me the contract?"],
-["Posso farle una domanda?","May I ask you a question?"],
-["Firmiamo domani.","We'll sign tomorrow."],
+["Può mandarmi il contratto?","Could you send me the contract?","Formal (Lei)"],
+["Mi può mandare un preventivo?","Could you send me a quote?","Preventivo = quote / estimate"],
+["Possiamo sentirci la settimana prossima?","Can we talk next week?"],
 ["Affare fatto!","It's a deal!"],
 ["Non vediamo l'ora di collaborare.","We look forward to working together."]]},
 {it:"A Tavola",en:"At the Table",c1:"#D42F6A",c2:"#FF7A55",wt:"#fff",p:[
 ["Un tavolo per due, per favore.","A table for two, please."],
-["Ho una prenotazione.","I have a reservation."],
+["Ho prenotato a nome…","I have a reservation under the name…","Then add your name"],
 ["Il menù, per favore.","The menu, please."],
 ["Cosa mi consiglia?","What do you recommend?"],
 ["Vorrei un caffè.","I'd like a coffee.","Un caffè = an espresso"],
 ["Per me, la pasta.","The pasta for me."],
 ["Un bicchiere di vino rosso.","A glass of red wine."],
-["Acqua frizzante o naturale?","Sparkling or still water?"],
+["Acqua frizzante o naturale?","Sparkling or still water?","The waiter asks; reply: Naturale, grazie."],
 ["Che cosa c'è di buono oggi?","What's good today?"],
-["È piccante?","Is it spicy?"],
+["Che vino ci consiglia?","What wine do you recommend?"],
 ["Buon appetito!","Enjoy your meal!"],
 ["Salute!","Cheers!"],
 ["Facciamo un brindisi.","Let's make a toast."],
-["Un altro, per favore.","Another one, please."],
+["Un altro, per favore.","Another one, please.","Un'altra for feminine words, like birra"],
 ["Era tutto buonissimo.","Everything was delicious."],
 ["Il conto, per favore.","The bill, please."],
 ["Offro io.","It's on me."],
@@ -340,7 +343,7 @@ const WORLDS=[
 ["Dov'è la stazione?","Where is the station?"],
 ["A che ora parte il treno?","What time does the train leave?"],
 ["Un biglietto per Milano, per favore.","A ticket to Milan, please."],
-["Dove posso prendere un taxi?","Where can I get a taxi?"],
+["Il treno è in orario?","Is the train on time?"],
 ["Può portarmi a questo indirizzo?","Can you take me to this address?"],
 ["È lontano da qui?","Is it far from here?"],
 ["Quanto ci vuole?","How long does it take?"],
@@ -349,7 +352,7 @@ const WORLDS=[
 ["A che ora è la colazione?","What time is breakfast?"],
 ["Qual è la password del Wi-Fi?","What's the Wi-Fi password?"],
 ["Il volo è in ritardo.","The flight is delayed."],
-["Ho perso la valigia.","I lost my suitcase."],
+["La mia valigia non è arrivata.","My suitcase didn't arrive."],
 ["Dov'è l'uscita?","Where is the exit?"],
 ["Mi può chiamare un taxi?","Could you call me a taxi?"]]},
 {it:"Scioltezza",en:"Sounding Fluent",c1:"#4338CA",c2:"#14B8D6",wt:"#fff",p:[
@@ -386,7 +389,21 @@ const fresh=()=>({name:"",coins:0,cards:{},levels:{},best:0,set:{voice:"f",sfx:t
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){S=fresh()}
 S=Object.assign(fresh(),S);S.set=Object.assign(fresh().set,S.set||{});
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+/* Progress: localStorage for instant load, plus the artifact's private per-user store so it survives iOS clearing site data. */
+let REMOTE=null,remoteT;
+function save(){S.at=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  if(REMOTE){clearTimeout(remoteT);remoteT=setTimeout(()=>{REMOTE.set({json:JSON.stringify(S),at:S.at}).catch(()=>{})},1200)}}
+(async()=>{try{
+  for(let i=0;i<30&&!(window.claude&&window.claude.use);i++)await new Promise(r=>setTimeout(r,100));
+  if(!(window.claude&&window.claude.use))return;
+  const[db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;
+  const uid=await user.id();if(!uid)return;
+  const ref=db.doc("data/users/"+uid+"/progress"),snap=await ref.get();REMOTE=ref;
+  const d=snap.exists?snap.data():null;
+  if(d&&d.json&&(d.at||0)>(S.at||0)){const r=JSON.parse(d.json);S=Object.assign(fresh(),r);S.set=Object.assign(fresh().set,r.set||{});
+    try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}applyTheme();if(!sess&&!document.querySelector(".modal"))renderMap()}
+  else if(S.at)save();
+}catch(e){}})();
 function applyTheme(){const r=document.documentElement;if(S.set.theme==="light"||S.set.theme==="dark")r.setAttribute("data-app",S.set.theme);else r.removeAttribute("data-app")}
 applyTheme();
 
@@ -397,13 +414,19 @@ const cleared=k=>(S.levels[k]||0)>0;
 const unlocked=i=>S.set.open||i===0||cleared(LV[i-1].key);
 const curIndex=()=>{const i=LV.findIndex((l,i)=>unlocked(i)&&!cleared(l.key));return i<0?LV.length-1:i};
 
+document.addEventListener("touchstart",()=>{},{passive:true});
+function syncInsets(){const cs=getComputedStyle(document.documentElement),r=document.documentElement.style;
+  r.setProperty("--sab",cs.paddingBottom);r.setProperty("--sal",cs.paddingLeft);r.setProperty("--sar",cs.paddingRight)}
+syncInsets();addEventListener("resize",syncInsets);
+
 /* ---------- voice: recorded clips, one per phrase per voice ---------- */
 const AUD=JSON.parse(document.getElementById("audio-data").textContent);
 const BYIT=Object.fromEntries(CARDS.map(c=>[c.it,c.id]));
 const URLS={};
-let player=null;
+let player=null,useData=false;
 try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}
 function clipURL(id,g){const k=g+"_"+id;if(URLS[k])return URLS[k];const b64=AUD[k];if(!b64)return null;
+  if(useData)return URLS[k]="data:audio/mpeg;base64,"+b64;
   const bin=atob(b64),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
   return URLS[k]=URL.createObjectURL(new Blob([u8],{type:"audio/mpeg"}))}
 function getPlayer(){if(!player){player=new Audio();player.preload="auto";player.setAttribute("playsinline","");player.id="voice-player";document.body.appendChild(player)}return player}
@@ -416,6 +439,8 @@ function speak(text,slow,idOverride){
   try{a.currentTime=0}catch(e){}
   a.defaultPlaybackRate=a.playbackRate=slow?0.7:1;
   a.preservesPitch=a.webkitPreservesPitch=true;
+  const rate=slow?0.7:1;a.onplaying=()=>{if(a.playbackRate!==rate)a.playbackRate=rate};
+  a.onerror=()=>{if(!useData){useData=true;for(const k in URLS)delete URLS[k];a.src=clipURL(id,S.set.voice);a.playbackRate=rate;a.play().catch(()=>{})}else toast("Audio couldn't play here")};
   const p=a.play();
   if(p&&p.catch)p.catch(err=>{if(err&&err.name==="NotAllowedError")toast("Tap Listen to hear it")});
   a.dataset.last=S.set.voice+"_"+id+(slow?"_slow":"");
@@ -424,11 +449,13 @@ function voiceNote(){return"Woman: Sara · Man: Nicola. No sound? Check your vol
 let toastT;function toast(msg){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),2200)}
 
 /* ---------- sound effects ---------- */
-let AC;
-function tone(seq){if(!S.set.sfx)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const t0=AC.currentTime+.01;
+let AC,acIdle;
+function ac(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state!=="running")AC.resume()}catch(e){}return AC}
+function tone(seq){if(!S.set.sfx)return;try{const AC=ac();if(!AC)return;const t0=AC.currentTime+.01;
   seq.forEach(([f,st,d,type="triangle",vol=.13])=>{const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;
   g.gain.setValueAtTime(0,t0+st);g.gain.linearRampToValueAtTime(vol,t0+st+.012);g.gain.exponentialRampToValueAtTime(.001,t0+st+d);
-  o.connect(g).connect(AC.destination);o.start(t0+st);o.stop(t0+st+d+.03)})}catch(e){}}
+  o.connect(g).connect(AC.destination);o.start(t0+st);o.stop(t0+st+d+.03)});
+  clearTimeout(acIdle);acIdle=setTimeout(()=>{try{AC.suspend()}catch(e){}},1500)}catch(e){}}
 const SFX={good:()=>tone([[1175,0,.08],[1760,.07,.24]]),bad:()=>tone([[300,0,.16,"sine",.16],[220,.11,.26,"sine",.16]]),
   clear:()=>tone([[523,0,.14],[659,.11,.14],[784,.22,.14],[1047,.33,.5]]),tap:()=>tone([[900,0,.035,"sine",.05]])};
 
@@ -702,7 +729,7 @@ function openSettings(){
     <button class="btn ghost" id="reset">Reset all progress</button>`);
   wireVoice(m);
   m.querySelectorAll("[data-theme-set]").forEach(b=>b.onclick=()=>{S.set.theme=b.dataset.themeSet;save();applyTheme();m.querySelectorAll("[data-theme-set]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.themeSet===S.set.theme))});
-  const ni=m.querySelector("#nameIn");ni.oninput=()=>{const v=ni.value.trim();if(v){S.name=v;save()}};
+  const ni=m.querySelector("#nameIn");ni.oninput=()=>{const v=ni.value.trim();if(v){S.name=v;save()}};ni.onblur=()=>scrollTo(0,0);
   m.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{const k=b.dataset.k;S.set[k]=!S.set[k];b.setAttribute("aria-checked",S.set[k]);save()});
   let armed=false;const r=m.querySelector("#reset");
   r.onclick=()=>{if(!armed){armed=true;r.className="btn red";r.textContent="Tap again to erase everything";return}
@@ -725,13 +752,14 @@ function renderWelcome(){
     <div class="logo" aria-label="CiaoCiao"><span class="a">Ciao</span><span class="b">Ciao</span></div>
     <div class="bubbles" aria-hidden="true">${WORLDS.slice(0,6).map((w,i)=>`<span style="background:linear-gradient(135deg,${w.c1},${w.c2});color:${w.wt}">${esc(w.p[i===1?3:0][0])}</span>`).join("")}</div>
     <div><h1>Come ti chiami?</h1><p class="sub">What's your name? CiaoCiao uses it to greet you.</p></div>
-    <form id="nameForm" style="display:flex;flex-direction:column;gap:14px" novalidate>
-      <input class="field" id="welcomeName" maxlength="30" autocomplete="given-name" placeholder="Your first name" aria-label="Your first name">
-      <button class="btn" id="welcomeGo" type="submit" disabled>Iniziamo! <small>· Let's start</small></button>
-    </form></div>`;
+    <div id="nameForm" style="display:flex;flex-direction:column;gap:14px">
+      <input class="field" id="welcomeName" maxlength="30" autocomplete="given-name" enterkeyhint="go" placeholder="Your first name" aria-label="Your first name">
+      <button class="btn" id="welcomeGo" type="button" disabled>Iniziamo! <small>· Let's start</small></button>
+    </div></div>`;
   const inp=document.getElementById("welcomeName"),go=document.getElementById("welcomeGo");
   inp.oninput=()=>{go.disabled=!inp.value.trim()};
-  document.getElementById("nameForm").onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(!v)return;S.name=v;save();inp.blur();renderMap()};
+  const submit=()=>{const v=inp.value.trim();if(!v)return;S.name=v;save();inp.blur();scrollTo(0,0);renderMap()};
+  go.onclick=submit;inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();submit()}};
 }
 renderMap();
 </script>

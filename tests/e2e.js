@@ -16,6 +16,11 @@ const run=process.argv[2]||'1';
  await p.addInitScript(()=>{window.__plays=[];const orig=HTMLMediaElement.prototype.play;
    HTMLMediaElement.prototype.play=function(){const r={src:this.src,rate:this.playbackRate,last:null,ok:null};window.__plays.push(r);const pr=orig.call(this);
      pr.then(()=>{r.ok=true;r.last=this.dataset.last},e=>{r.ok=false;r.err=e.name});return pr}});
+ // wait for a NEW play record (index>=before) to exist and settle (ok!==null), up to 2.5s
+ const settle=async(before,ms=2500)=>{const t0=Date.now();let r=null;
+   while(Date.now()-t0<ms){r=await p.evaluate(b=>{const a=__plays;return a.length>b?a[a.length-1]:null},before);if(r&&r.ok!==null)return r;await p.waitForTimeout(25)}
+   return r||{ok:false,last:'',rate:0,err:'no play() call'}};
+ const plays=()=>p.evaluate(()=>__plays.length);
  await p.goto(URL_);await p.waitForTimeout(400);
 
  // 1. welcome
@@ -23,8 +28,21 @@ const run=process.argv[2]||'1';
  ok(await p.isVisible('#welcomeName'),'welcome screen shows first');
  ok(!(await p.content()).includes('Mark'),'no hard-coded Mark');
  ok(await p.isDisabled('#welcomeGo'),'start disabled with empty name');
- await p.fill('#welcomeName','Giulia');await p.click('#welcomeGo');await p.waitForTimeout(200);
+ await p.fill('#welcomeName','   ');ok(await p.isDisabled('#welcomeGo'),'start disabled for whitespace-only name');
+ await p.press('#welcomeName','Enter');await p.waitForTimeout(100);ok(await p.isVisible('#welcomeName'),'Enter with blank name does not advance');
+ ok(await p.evaluate(()=>!S.name),'blank name not saved');
+ await p.fill('#welcomeName','Giulia');ok(await p.isEnabled('#welcomeGo'),'start enabled once name typed');await p.click('#welcomeGo');await p.waitForTimeout(200);
  ok((await p.textContent('.hero h1')).includes('Giulia'),'greets entered name');
+ ok(!(await p.textContent('.hero h1')).includes('Mark'),'greeting has no hard-coded Mark');
+
+ // 1b. map worlds render with real height at iPhone size (flex-shrink collapse regression)
+ const geo=await p.evaluate(()=>{const vw=innerWidth;return[...document.querySelectorAll('.world')].map(w=>{const r=w.getBoundingClientRect();const nodes=[...w.querySelectorAll('.node')].map(n=>n.getBoundingClientRect());
+   return{h:r.height,w:r.width,nn:nodes.length,nodesOk:nodes.every(n=>n.width>=60&&n.height>=60&&n.left>=-1&&n.right<=vw+1),inside:nodes.every(n=>n.top>=r.top-1&&n.bottom<=r.bottom+1)}})});
+ console.log('  worlds',geo.length,'min height',Math.min(...geo.map(g=>g.h)));
+ ok(geo.length===await p.evaluate(()=>WORLDS.length),'one .world per WORLDS entry, got '+geo.length);
+ ok(geo.every(g=>g.h>=300),'every world has substantial height (>=300px): '+JSON.stringify(geo.map(g=>Math.round(g.h)).slice(0,8)));
+ ok(geo.every(g=>g.w>=300&&g.nn>=2&&g.nodesOk&&g.inside),'world nodes sized, on-screen and inside their world');
+ ok(await p.evaluate(()=>{const s=document.getElementById('scroll');return s.scrollHeight>s.clientHeight*3}),'map scroll content is tall (worlds not collapsed)');
 
  // 2. every audio clip decodes
  console.log('— audio clips');
@@ -37,11 +55,11 @@ const run=process.argv[2]||'1';
  ok(clip.n===300&&!clip.bad.length&&!clip.missing.length,'all 300 clips valid '+JSON.stringify(clip.bad.slice(0,5)));
 
  // 3. voice toggle on map plays sample in chosen voice
- await p.click('.hero [data-voice="m"]');await p.waitForTimeout(300);
- let last=await p.evaluate(()=>__plays[__plays.length-1]);
+ let n0=await plays();await p.click('.hero [data-voice="m"]');
+ let last=await settle(n0);
  ok(last&&last.ok&&/^m_/.test(last.last),'map Uomo toggle plays male clip '+JSON.stringify(last));
- await p.click('.hero [data-voice="f"]');await p.waitForTimeout(300);
- last=await p.evaluate(()=>__plays[__plays.length-1]);
+ n0=await plays();await p.click('.hero [data-voice="f"]');
+ last=await settle(n0);
  ok(last&&last.ok&&/^f_/.test(last.last),'map Donna toggle plays female clip');
 
  // 4. play every level through
@@ -54,21 +72,22 @@ const run=process.argv[2]||'1';
      const before=await p.evaluate(()=>__plays.length);
      if(t.mode==='learn'){
        learns++;
-       let r=await p.evaluate(()=>__plays[__plays.length-1]);
-       ok(r&&r.ok&&r.last&&r.last.endsWith(t.id),label+' learn autoplay '+t.id);
-       await p.click('.card [data-say]');await p.waitForTimeout(60);
-       r=await p.evaluate(()=>__plays[__plays.length-1]);
+       let r=await settle(before-1);
+       ok(r&&r.ok&&r.last&&r.last.endsWith(t.id),label+' learn autoplay '+t.id+' '+JSON.stringify(r));
+       let n=await plays();await p.click('.card [data-say]');
+       r=await settle(n);
        ok(r.ok&&r.last.endsWith(t.id)&&r.rate===1,label+' Listen button plays '+t.id+' '+JSON.stringify(r));
-       await p.click('.card [data-slow]');await p.waitForTimeout(60);
-       r=await p.evaluate(()=>__plays[__plays.length-1]);
+       n=await plays();await p.click('.card [data-slow]');
+       r=await settle(n);
        ok(r.ok&&r.last.endsWith(t.id+'_slow')&&Math.abs(r.rate-0.7)<.01,label+' Slow button plays slow '+t.id+' '+JSON.stringify(r));
        audioChecks+=3;
        await p.click('#next');
      }else if(t.mode==='choice'||t.mode==='listen'){
        if(t.mode==='listen'){
-         let r=await p.evaluate(()=>__plays[__plays.length-1]);ok(r&&r.ok&&r.last.endsWith(t.id),label+' listen autoplay');
-         await p.click('.bigspk');await p.waitForTimeout(40);await p.click('.slowspk');await p.waitForTimeout(40);
-         r=await p.evaluate(()=>__plays[__plays.length-1]);ok(r.ok&&r.last.endsWith(t.id+'_slow'),label+' listen SLOW button');audioChecks+=3;
+         let r=await settle(before-1);ok(r&&r.ok&&r.last.endsWith(t.id),label+' listen autoplay '+JSON.stringify(r));
+         let n=await plays();await p.click('.bigspk');r=await settle(n);ok(r.ok&&r.last.endsWith(t.id)&&r.rate===1,label+' listen big button '+JSON.stringify(r));
+         n=await plays();await p.click('.slowspk');
+         r=await settle(n);ok(r.ok&&r.last.endsWith(t.id+'_slow')&&Math.abs(r.rate-0.7)<.01,label+' listen SLOW button '+JSON.stringify(r));audioChecks+=3;
        }
        const want=t.mode==='choice'?t.it:t.en;
        const opts=await p.$$('.opt');ok(opts.length===4,label+' 4 options');
@@ -77,7 +96,7 @@ const run=process.argv[2]||'1';
        const idx=wrong?texts.findIndex(x=>x!==want):texts.indexOf(want);
        await opts[idx].click();await p.waitForSelector('.sheet #cont');
        ok(await p.isVisible(wrong?'.sheet.bad':'.sheet.good'),label+' feedback sheet '+(wrong?'bad':'good'));
-       await p.click('.sheet [data-say]');let r=await p.evaluate(()=>__plays[__plays.length-1]);ok(r.ok&&r.last.endsWith(t.id),label+' sheet replay');
+       let n=await plays();await p.click('.sheet [data-say]');let r=await settle(n);ok(r.ok&&r.last.endsWith(t.id),label+' sheet replay '+JSON.stringify(r));
        await p.click('#cont');
      }else if(t.mode==='build'){
        const words=t.it.split(/\s+/).map(w=>w.replace(/[.,!?…;:]/g,''));
@@ -92,10 +111,10 @@ const run=process.argv[2]||'1';
        ok(await p.isVisible(wrong?'.sheet.bad':'.sheet.good'),label+' build verdict '+(wrong?'bad':'good')+' '+t.it);
        await p.click('#cont');
      }else if(t.mode==='recall'){
-       await p.click('#flipBtn');await p.waitForTimeout(80);
+       await p.click('#flipBtn');
        ok(await p.$('.flip.flipped'),label+' card flips');
-       let r=await p.evaluate(()=>__plays[__plays.length-1]);ok(r&&r.ok&&r.last.endsWith(t.id),label+' flip plays audio');
-       await p.click('.face.back [data-slow]');r=await p.evaluate(()=>__plays[__plays.length-1]);ok(r.ok&&r.last.endsWith(t.id+'_slow'),label+' recall slow');
+       let r=await settle(before);ok(r&&r.ok&&r.last.endsWith(t.id),label+' flip plays audio '+JSON.stringify(r));
+       let n=await plays();await p.click('.face.back [data-slow]');r=await settle(n);ok(r.ok&&r.last.endsWith(t.id+'_slow'),label+' recall slow '+JSON.stringify(r));
        audioChecks+=2;
        await p.click(wrong?'#no':'#yes');
      }
@@ -143,8 +162,15 @@ const run=process.argv[2]||'1';
  await p.emulateMedia({colorScheme:'dark'});ok(await bg()==='rgb(237, 241, 250)','light setting beats dark phone');
  await p.click('[data-theme-set="auto"]');ok(await bg()==='rgb(12, 15, 30)','auto follows phone (dark)');
  await p.evaluate(()=>document.documentElement.setAttribute('data-theme','light'));await p.click('[data-theme-set="dark"]');ok(await bg()==='rgb(12, 15, 30)','dark setting beats host light attribute');
+ await p.evaluate(()=>document.documentElement.setAttribute('data-theme','dark'));await p.click('[data-theme-set="light"]');ok(await bg()==='rgb(237, 241, 250)','light setting beats host dark attribute (phone dark)');
+ await p.emulateMedia({colorScheme:'light'});ok(await bg()==='rgb(237, 241, 250)','light setting, phone light, host dark');
+ await p.click('[data-theme-set="dark"]');ok(await bg()==='rgb(12, 15, 30)','dark setting beats light phone');
+ await p.click('[data-theme-set="auto"]');await p.evaluate(()=>document.documentElement.removeAttribute('data-theme'));ok(await bg()==='rgb(237, 241, 250)','auto follows phone (light)');
+ await p.emulateMedia({colorScheme:'dark'});ok(await bg()==='rgb(12, 15, 30)','auto follows phone live change to dark');
+ ok(await p.evaluate(()=>[...document.querySelectorAll('[data-theme-set]')].map(b=>b.textContent+':'+b.getAttribute('aria-pressed')).join()==='Auto:true,Light:false,Dark:false'),'theme segmented control shows Auto/Light/Dark with Auto pressed');
+ await p.click('[data-theme-set="dark"]');await p.evaluate(()=>document.documentElement.setAttribute('data-theme','light'));await p.click('[data-theme-set="dark"]');
  await p.evaluate(()=>document.documentElement.removeAttribute('data-theme'));
- await p.click('.modal [data-voice="m"]');last=await p.evaluate(()=>__plays[__plays.length-1]);ok(last.ok&&/^m_/.test(last.last),'settings voice toggle');
+ n0=await plays();await p.click('.modal [data-voice="m"]');last=await settle(n0);ok(last.ok&&/^m_/.test(last.last),'settings voice toggle');
  await p.fill('#nameIn','Marco');
  await p.click('.sw[data-k="sfx"]');ok(await p.evaluate(()=>S.set.sfx===false),'sfx switch');
  await p.click('.sw[data-k="open"]');ok(await p.evaluate(()=>S.set.open===true),'open-all switch');
