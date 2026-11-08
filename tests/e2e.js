@@ -10,8 +10,8 @@ let fails=[];const ok=(c,m)=>{if(!c){fails.push(m);console.log('  FAIL',m)}};
 const run=process.argv[2]||'1';
 
 (async()=>{
- const b=await chromium.launch({args:['--autoplay-policy=user-gesture-required']});
- const ctx=await b.newContext({...devices['iPhone 13']});
+ const b=await chromium.launch({args:['--autoplay-policy=user-gesture-required','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream']});
+ const ctx=await b.newContext({...devices['iPhone 13'],permissions:['microphone']});
  const p=await ctx.newPage();const errs=[];
  p.on('pageerror',e=>errs.push('pageerror: '+e.message));
  p.on('console',m=>{if(m.type()==='error'&&!/fonts\.g|ERR_TUNNEL|net::/.test(m.text()))errs.push('console: '+m.text())});
@@ -23,6 +23,10 @@ const run=process.argv[2]||'1';
    while(Date.now()-t0<ms){r=await p.evaluate(b=>{const a=__plays;return a.length>b?a[a.length-1]:null},before);if(r&&r.ok!==null)return r;await p.waitForTimeout(25)}
    return r||{ok:false,last:'',rate:0,err:'no play() call'}};
  const plays=()=>p.evaluate(()=>__plays.length);
+ const archive=[];const reloadPage=async(w=400)=>{archive.push(...await p.evaluate(()=>__plays));await p.reload();await p.waitForTimeout(w)};
+ // svg icon centred inside its button (tolerance 2px); returns offenders
+ const offCentre=(sel)=>p.evaluate(sel=>[...document.querySelectorAll(sel)].filter(e=>e.offsetParent!==null).map(svg=>{const a=svg.getBoundingClientRect(),b=svg.parentElement.getBoundingClientRect();
+   return{dx:Math.abs((a.left+a.width/2)-(b.left+b.width/2)),dy:Math.abs((a.top+a.height/2)-(b.top+b.height/2)),w:a.width}}).filter(o=>o.w>0&&(o.dx>2||o.dy>2)),sel);
  await p.goto(URL_);await p.waitForTimeout(400);
 
  // 1. welcome
@@ -33,16 +37,43 @@ const run=process.argv[2]||'1';
  await p.fill('#welcomeName','   ');ok(await p.isDisabled('#welcomeGo'),'start disabled for whitespace-only name');
  await p.press('#welcomeName','Enter');await p.waitForTimeout(100);ok(await p.isVisible('#welcomeName'),'Enter with blank name does not advance');
  ok(await p.evaluate(()=>!S.name),'blank name not saved');
- // Enter key submits
+ // Enter key submits; step 2 is the "why" screen
  await p.fill('#welcomeName','Anna');await p.press('#welcomeName','Enter');await p.waitForTimeout(200);
- ok(!(await p.$('#welcomeName'))&&(await p.textContent('.hero h1')).includes('Anna'),'Enter in name field submits and greets');
- // back to welcome (fresh storage), then the button path
- await p.evaluate(()=>localStorage.clear());await p.reload();await p.waitForTimeout(400);
+ ok(!(await p.$('#welcomeName')),'Enter in name field leaves the name step');
+ ok(await p.evaluate(()=>S.name==='Anna'&&!S.why),'name saved, why still empty');
+ ok((await p.textContent('h1')).includes("Perch"),'why screen shows after name');
+ ok((await p.$$('[data-why]')).length===4,'why screen has 4 options');
+ ok(await p.isVisible('#whySkip'),'why screen has a skip link');
+ ok(!(await p.$('.hero')),'map is not rendered until why is chosen');
+ await reloadPage();ok((await p.$$('[data-why]')).length===4&&!(await p.$('.hero')),'why screen persists across reload (name saved, why missing)');
+ const whys=await p.evaluate(()=>WHYS.map(w=>[w[0],w[1]]));
+ ok(whys.map(w=>w[0]).join()==='business,travel,family,culture','why options are business, travel, family, culture');
+ await p.click('[data-why="family"]');await p.waitForTimeout(150);
+ ok(await p.evaluate(()=>S.why==='family'),'choosing family stores S.why');
+ ok((await p.textContent('.hero h1')).includes('Anna'),'map greets Anna after why');
+ ok((await p.textContent('.hero .why')).includes('Family & friends'),'hero shows the chosen why label');
+ await reloadPage();ok((await p.textContent('.hero .why')).includes('Family & friends'),'chosen why persists after reload');
+ // fresh profile: button path + skip
+ await p.evaluate(()=>localStorage.clear());await reloadPage();
  ok(await p.isVisible('#welcomeName'),'welcome again after clearing storage');
  await p.fill('#welcomeName','Giulia');ok(await p.isEnabled('#welcomeGo'),'start enabled once name typed');await p.click('#welcomeGo');await p.waitForTimeout(200);
+ ok(await p.isVisible('#whySkip'),'button path also reaches the why step');
+ await p.click('#whySkip');await p.waitForTimeout(150);
+ ok(await p.evaluate(()=>S.why==='skip'&&S.name==='Giulia'),'skip stores S.why="skip"');
+ ok(!(await p.$('.hero .why')),'no why line on the hero when skipped');
  ok((await p.textContent('.hero h1')).includes('Giulia'),'greets entered name');
  ok(!(await p.textContent('.hero h1')).includes('Mark'),'greeting has no hard-coded Mark');
+ await reloadPage();ok(!!(await p.$('.hero'))&&await p.evaluate(()=>S.why==='skip'),'skip persists: map shows after reload');
 
+ // 1a. content wiring: phrases, scenes
+ const wiring=await p.evaluate(()=>{const first=WORLDS[0].p.slice(0,5).map(x=>x[0]);const bad=[];let them=0,you=0;
+   if(SCENES.length!==WORLDS.length)bad.push('scenes '+SCENES.length);
+   SCENES.forEach((sc,wi)=>sc.turns.forEach(([w,it])=>{const id=BYIT[it];if(!id){bad.push('unresolved '+wi+': '+it);return}
+     if(!AUD['f_'+id]||!AUD['m_'+id])bad.push('no audio '+id);if(w==='t')them++;else if(w==='y')you++;else bad.push('bad who '+w)}));
+   return{first,bad,them,you,cards:CARDS.length,lv0:LV[0].ids.length}});
+ ok(wiring.first.join('|')==="Parla italiano?|Sì, parlo italiano.|Non capisco.|Quanto costa?|Ce l'ha?",'world 1 starts with the five core phrases: '+wiring.first.join('|'));
+ ok(!wiring.bad.length,'every SCENES turn resolves to a card with both voices '+JSON.stringify(wiring.bad.slice(0,5)));
+ ok(wiring.them>=8&&wiring.you>=8&&wiring.cards===150,'scenes have partner and learner lines; 150 cards');
  // 1b. map worlds render with real height at iPhone size (flex-shrink collapse regression)
  const geo=await p.evaluate(()=>{const vw=innerWidth;return[...document.querySelectorAll('.world')].map(w=>{const r=w.getBoundingClientRect();const nodes=[...w.querySelectorAll('.node')].map(n=>n.getBoundingClientRect());
    return{h:r.height,w:r.width,nn:nodes.length,nodesOk:nodes.every(n=>n.width>=60&&n.height>=60&&n.left>=-1&&n.right<=vw+1),inside:nodes.every(n=>n.top>=r.top-1&&n.bottom<=r.bottom+1)}})});
@@ -51,6 +82,9 @@ const run=process.argv[2]||'1';
  ok(geo.every(g=>g.h>=300),'every world has substantial height (>=300px): '+JSON.stringify(geo.map(g=>Math.round(g.h)).slice(0,8)));
  ok(geo.every(g=>g.w>=300&&g.nn>=2&&g.nodesOk&&g.inside),'world nodes sized, on-screen and inside their world');
  ok(await p.evaluate(()=>{const s=document.getElementById('scroll');return s.scrollHeight>s.clientHeight*3}),'map scroll content is tall (worlds not collapsed)');
+
+ ok(!(await offCentre('.node > svg')).length,'map node icons (lock/crown) centred: '+JSON.stringify(await offCentre('.node > svg')));
+ ok(!(await offCentre('.icon-btn > svg')).length,'top-bar icon buttons centred: '+JSON.stringify(await offCentre('.icon-btn > svg')));
 
  // 2. every audio clip decodes
  console.log('— audio clips');
@@ -71,18 +105,51 @@ const run=process.argv[2]||'1';
  ok(last&&last.ok&&/^f_/.test(last.last),'map Donna toggle plays female clip');
 
  // 4. play every level through
+ const cov={them:0,you:0,huh:0,no:0,rec:0};
+ let echoFull=false,recDone=false,iconsPlay=false,iconsListen=false;
  const playLevel=async(label,wrongRate)=>{
    let guard=0,wrongs=0,learns=0,audioChecks=0;
-   while(guard++<200){
+   while(guard++<250){
      if(await p.$('.result'))break;
-     const t=await p.evaluate(()=>{const t=sess.tasks[sess.i];return{mode:t.mode,it:t.c.it,en:t.c.en,id:t.c.id,n:sess.tasks.length}});
+     const t=await p.evaluate(()=>{const t=sess.tasks[sess.i];return{mode:t.mode,it:t.c.it,en:t.c.en,id:t.c.id,n:sess.tasks.length,att:t.att}});
      const wrong=t.mode!=='learn'&&Math.random()<wrongRate;
      const before=await p.evaluate(()=>__plays.length);
      if(t.mode==='learn'){
        learns++;
        let r=await settle(before-1);
-       ok(r&&r.ok&&r.last&&r.last.endsWith(t.id),label+' learn autoplay '+t.id+' '+JSON.stringify(r));
-       let n=await plays();await p.click('.card [data-say]');
+       ok(r&&r.ok&&r.last&&r.last.endsWith(t.id)&&r.rate===1,label+' learn autoplay '+t.id+' '+JSON.stringify(r));
+       let n;
+       if(!iconsPlay){iconsPlay=true;const o=await offCentre('.echo-btn > svg');ok(!o.length,'echo button icon centred '+JSON.stringify(o))}
+       if(!echoFull){echoFull=true;
+         // one full echo round: clip ends -> "Your turn" gap -> a dot lights -> next round auto-plays
+         n=await plays();
+         try{await p.waitForSelector('.echo.turn',{timeout:8000})}catch(e){}
+         ok(await p.isVisible('.echo.turn'),'echo: "Your turn" state appears after the clip ends');
+         ok((await p.textContent('#echoMsg')).includes('Your turn'),'echo: message says Your turn');
+         try{await p.waitForFunction(()=>document.querySelectorAll('.dots i.on').length>=1,null,{timeout:12000})}catch(e){}
+         ok(await p.evaluate(()=>document.querySelectorAll('.dots i.on').length)>=1,'echo: a progress dot turns on after the gap');
+         r=await settle(n);
+         ok(r.ok&&r.last&&r.last.endsWith(t.id)&&r.rate===1,'echo: next round plays automatically '+JSON.stringify(r));
+         ok(await p.evaluate(()=>document.querySelectorAll('.dots i').length)===3,'echo: three round dots');
+         audioChecks+=2;
+       }
+       if(!recDone){recDone=true;cov.rec++;
+         ok(await p.isVisible('#recBtn'),'record button is offered');
+         await p.click('#recBtn');
+         try{await p.waitForSelector('#recBtn.rec',{timeout:3000})}catch(e){}
+         ok(await p.evaluate(()=>!!recState),'recording started (MediaRecorder active)');
+         ok((await p.textContent('#recBtn')).includes('Stop'),'record button turns into Stop');
+         await p.waitForTimeout(900);n=await plays();await p.click('#recBtn');
+         r=await settle(n);
+         ok(r.ok&&r.last==='rec','recording plays back right after stop, dataset.last=rec '+JSON.stringify(r));
+         const voice=await p.evaluate(()=>S.set.voice);
+         let got=true;try{await p.waitForFunction(({n,id,voice})=>__plays.slice(n).some(x=>x.ok&&x.last===voice+'_'+id),{n,id:t.id,voice},{timeout:12000})}catch(e){got=false}
+         ok(got,'native clip plays after the recording ends (record-and-compare)');
+         ok((await p.textContent('#recBtn')).includes('again'),'record button offers Record again');
+         ok(await p.evaluate(()=>recState===null),'recorder released after stop');
+         audioChecks+=2;
+       }
+       n=await plays();await p.click('.card [data-say]');
        r=await settle(n);
        ok(r.ok&&r.last.endsWith(t.id)&&r.rate===1,label+' Listen button plays '+t.id+' '+JSON.stringify(r));
        n=await plays();await p.click('.card [data-slow]');
@@ -90,8 +157,39 @@ const run=process.argv[2]||'1';
        ok(r.ok&&r.last.endsWith(t.id+'_slow')&&Math.abs(r.rate-0.7)<.01,label+' Slow button plays slow '+t.id+' '+JSON.stringify(r));
        audioChecks+=3;
        await p.click('#next');
+     }else if(t.mode==='them'){cov.them++;
+       const vNow=await p.evaluate(()=>S.set.voice),pv=vNow==='f'?'m':'f';
+       let r=await settle(before-1);
+       ok(r&&r.ok&&r.last.startsWith(pv+'_')&&r.last.endsWith(t.id)&&r.rate===1,label+' partner line autoplays in the OPPOSITE voice ('+pv+' vs '+vNow+') '+JSON.stringify(r));
+       ok(!(await p.isVisible('#themEn')),label+' English hidden until asked');
+       const log0=await p.evaluate(()=>sess.log.length),c0=await p.evaluate(()=>S.coins);
+       if(wrong){cov.huh++;const n=await plays();await p.click('#huh');r=await settle(n);
+         ok(r.ok&&r.last.startsWith(pv+'_')&&r.last.endsWith(t.id+'_slow')&&Math.abs(r.rate-0.7)<.01,label+' Didn\'t catch it plays slow in partner voice '+JSON.stringify(r));
+         ok(await p.isVisible('#themEn'),label+' English shown after Didn\'t catch it');wrongs++;audioChecks++}
+       await p.click('#ok');
+       const after=await p.evaluate(()=>({c:S.coins,l:sess?sess.log.length:-1,done:!sess}));
+       if(!after.done)ok(after.l===log0+1,label+' partner line added to chat log');
+       if(!wrong)ok(after.c-c0===5,label+' unhelped Capito gives +5 coins, got '+(after.c-c0));
+       else ok(after.c===c0,label+' helped Capito gives no coins');
+       audioChecks++;
+     }else if(t.mode==='you'){cov.you++;
+       const vNow=await p.evaluate(()=>S.set.voice);
+       ok(!(await p.isVisible('#youIt')),label+' Italian hidden until reveal');
+       ok((await p.textContent('#cue')).includes(t.en),label+' cue shows the English prompt');
+       const log0=await p.evaluate(()=>sess.log.length);
+       let n=await plays();await p.click('#reveal');let r=await settle(n);
+       ok(r.ok&&r.last===vNow+'_'+t.id&&r.rate===1,label+' reveal plays the line in your voice '+JSON.stringify(r));
+       ok(await p.isVisible('#youIt'),label+' Italian shown after reveal');audioChecks++;
+       if(wrong){cov.no++;await p.click('#no');wrongs++;
+         const st=await p.evaluate(()=>({same:sess.tasks[sess.i].c.id,mode:sess.tasks[sess.i].mode,att:sess.tasks[sess.i].att,len:sess.tasks.length,log:sess.log.length}));
+         ok(st.same===t.id&&st.mode==='you'&&st.att===t.att+1,label+' #no re-asks the SAME line next '+JSON.stringify(st)+' want '+t.id);
+         ok(st.len===t.n+1,label+' requeued exactly once');
+         ok(st.log===log0,label+' missed line is not added to the chat log');
+       }else{await p.click('#yes');
+         const l=await p.evaluate(()=>sess?sess.log.length:-1);if(l!==-1)ok(l===log0+1,label+' successful line added to chat log');}
      }else if(t.mode==='choice'||t.mode==='listen'){
        if(t.mode==='listen'){
+         if(!iconsListen){iconsListen=true;const o=await offCentre('.bigspk > svg');ok(!o.length,'big speaker icon centred '+JSON.stringify(o))}
          let r=await settle(before-1);ok(r&&r.ok&&r.last.endsWith(t.id),label+' listen autoplay '+JSON.stringify(r));
          let n=await plays();await p.click('.bigspk');r=await settle(n);ok(r.ok&&r.last.endsWith(t.id)&&r.rate===1,label+' listen big button '+JSON.stringify(r));
          n=await plays();await p.click('.slowspk');
@@ -125,8 +223,8 @@ const run=process.argv[2]||'1';
        let n=await plays();await p.click('.face.back [data-slow]');r=await settle(n);ok(r.ok&&r.last.endsWith(t.id+'_slow'),label+' recall slow '+JSON.stringify(r));
        audioChecks+=2;
        await p.click(wrong?'#no':'#yes');
-     }
-     if(wrong){wrongs++;const n=await p.evaluate(()=>sess?sess.tasks.length:-1);ok(n===-1||n===t.n+1,label+' miss requeues card')}
+     }else{ok(false,label+' unknown task mode '+t.mode);break}
+     if(wrong&&['choice','listen','build','recall'].includes(t.mode)){wrongs++;const n=await p.evaluate(()=>sess?sess.tasks.length:-1);ok(n===-1||n===t.n+1,label+' miss requeues card')}
      await p.waitForTimeout(15);
    }
    ok(await p.$('.result'),label+' reached result screen');
@@ -136,18 +234,65 @@ const run=process.argv[2]||'1';
 
  console.log('— playing all',await p.evaluate(()=>LV.length),'levels');
  const nLV=await p.evaluate(()=>LV.length);let totalAudio=0;
+ let bossesCleared=0;
  for(let i=0;i<nLV;i++){
    const exp=await p.evaluate(()=>curIndex());ok(exp===i,'current level is '+i+' got '+exp);
+   const lvInfo=await p.evaluate(i=>({type:LV[i].type,wi:LV[i].wi,key:LV[i].key,ids:LV[i].ids.length}),i);
+   const isBoss=lvInfo.type==='boss';
+   if(isBoss){ // alternate the learner's voice so both partner directions are exercised
+     const want=lvInfo.wi%2?'m':'f';
+     if(await p.evaluate(()=>S.set.voice)!==want){const n=await plays();await p.click(`.hero [data-voice="${want}"]`);await settle(n)}
+   }
    if(i%2)await p.click('#btnGo');else{await p.click(`.node[data-i="${i}"]`)}
-   const label='L'+i;const res=await playLevel(label,i%3===0?0:0.25);totalAudio+=res.audioChecks;
-   const st=await p.evaluate(k=>S.levels[k],await p.evaluate(i=>LV[i].key,i));ok(st>=1&&st<=3,label+' stars saved '+st);
+   const label='L'+i+(isBoss?'(boss)':'');
+   const hasScene=await p.evaluate(()=>!!sess.scene);ok(hasScene===isBoss,label+' boss levels (and only they) are conversations');
+   if(isBoss){ok(await p.isVisible('.chip:has-text("Conversation")'),label+' conversation chip shows');
+     ok(await p.evaluate(()=>sess.tasks.every(t=>t.mode==='them'||t.mode==='you')),label+' boss tasks are only them/you')}
+   else{const modes=await p.evaluate(()=>sess.tasks.map(t=>t.mode));
+     const newBuild=await p.evaluate(()=>sess.tasks.filter(t=>t.mode==='build'&&LV[sess.li].ids.includes(t.c.id)).length);
+     ok(newBuild===0,label+' no build task for the level\'s new cards');
+     const lrn=await p.evaluate(()=>sess.tasks.filter(t=>t.mode==='learn').map(t=>t.c.id));
+     ok(lrn.every(id=>true)&&modes.slice(0,1)[0]!=='recall','new-card levels do not open with recall')}
+   const res=await playLevel(label,i%3===0?0:0.25);totalAudio+=res.audioChecks;
+   const st=await p.evaluate(k=>S.levels[k],lvInfo.key);ok(st>=1&&st<=3,label+' stars saved '+st);
    if(res.wrongs===0)ok(st===3,label+' perfect gives 3 stars');
    if(i===nLV-1)ok(!(await p.$('#nx')),'no next after final level');
-   if(i===4&&await p.$('#nx')){await p.click('#nx');ok(await p.$('.play'),'Next level button starts level');await p.click('#btnQuit');await p.click('#leave')}
-   else await p.click('#mp');
+   // missions
+   if(isBoss){
+     bossesCleared++;
+     ok(await p.isVisible('.result .mission [data-mission]'),label+' boss result shows the mission');
+     ok(await p.isEnabled('.result [data-mission]'),label+' mission button enabled before completing');
+     if(lvInfo.wi===0){
+       const c0=await p.evaluate(()=>S.coins);await p.click('.result [data-mission]');
+       let c1=await p.evaluate(()=>S.coins);ok(c1===c0+50,'mission gives +50 coins once, got '+(c1-c0));
+       ok(await p.evaluate(()=>S.missions[0]===true),'mission stored');
+       ok(await p.isDisabled('.result [data-mission]'),'mission button disables after completion');
+       await p.evaluate(()=>document.querySelector('.result [data-mission]').click());
+       ok(await p.evaluate(c=>S.coins===c,c1),'second mission click does not pay again');
+       await p.click('#mp');await p.waitForTimeout(100);
+       ok(await p.isDisabled('[data-mission="0"]'),'world card mission is complete/disabled on the map');
+       await reloadPage();
+       ok(await p.evaluate(c=>S.coins===c&&S.missions[0]===true,c1),'mission and +50 coins persist after reload');
+       ok(await p.isDisabled('[data-mission="0"]'),'mission stays complete after reload');
+       ok((await p.textContent('[data-mission="0"]')).includes('complete'),'mission button reads complete');
+     }else if(lvInfo.wi===1){
+       await p.click('#mp');await p.waitForTimeout(100);
+       const c0=await p.evaluate(()=>S.coins);await p.click('.world .mission [data-mission="1"]');
+       ok(await p.evaluate(c=>S.coins===c+50&&S.missions[1]===true,c0),'mission tapped from the map world card gives +50');
+       ok(await p.isDisabled('[data-mission="1"]'),'map mission disables after tap');
+     }else await p.click('#mp');
+     await p.waitForTimeout(50);
+     ok((await p.$$('.world .mission')).length===bossesCleared,'a mission card appears for each cleared boss ('+bossesCleared+')');
+   }else{
+     ok(!(await p.$('.result .mission')),label+' non-boss result has no mission');
+     if(i===4&&await p.$('#nx')){await p.click('#nx');ok(await p.$('.play'),'Next level button starts level');await p.click('#btnQuit');await p.click('#leave')}
+     else await p.click('#mp');
+   }
    await p.waitForTimeout(30);
  }
  const learned=await p.evaluate(()=>seenCount());ok(learned===150,'all 150 phrases learned, got '+learned);
+ console.log('  coverage',JSON.stringify(cov),'echoFull',echoFull,'bosses',bossesCleared);
+ ok(cov.them>20&&cov.you>20&&cov.huh>0&&cov.no>0&&cov.rec===1&&echoFull,'scene/echo/record paths were all exercised '+JSON.stringify(cov));
  console.log('  audio checks',totalAudio,'learned',learned,'coins',await p.evaluate(()=>S.coins));
 
  // 5. review (make cards due)
@@ -156,9 +301,16 @@ const run=process.argv[2]||'1';
  ok((await p.textContent('#btnRev')).includes('Review'),'review button shows due count');
  await p.click('#btnRev');await playLevel('REV',0.2);await p.click('#mp');
 
- // 6. quit flow
- await p.click('.node[data-i="0"]');await p.click('#btnQuit');ok(await p.isVisible('#stay'),'quit confirm shows');
- await p.click('#stay');ok(await p.$('.play'),'keep playing stays');await p.click('#btnQuit');await p.click('#leave');ok(await p.$('.hero'),'leave returns to map');
+ // 6. quit flow (also: leaving mid-recording must release the microphone and stop audio)
+ await p.evaluate(()=>{LV[0].ids.forEach(id=>delete S.cards[id]);save()});
+ await p.click('.node[data-i="0"]');ok(await p.isVisible('#recBtn'),'new-card level shows the echo drill with record button');
+ await p.click('#recBtn');await p.waitForSelector('#recBtn.rec');
+ await p.click('#btnQuit');ok(await p.isVisible('#stay'),'quit confirm shows');
+ await p.click('#stay');ok(await p.$('.play'),'keep playing stays');ok(await p.evaluate(()=>!!recState),'keep playing does not interrupt recording');
+ await p.click('#btnQuit');await p.click('#leave');ok(await p.$('.hero'),'leave returns to map');
+ await p.waitForTimeout(300);
+ ok(await p.evaluate(()=>recState===null),'leaving mid-recording stops the recorder (mic released)');
+ ok(await p.evaluate(()=>getPlayer().paused),'leaving a level silences the player');
 
  // 7. settings: theme, voice, switches, name, reset
  console.log('— settings');
@@ -189,15 +341,14 @@ const run=process.argv[2]||'1';
  ok(await p.evaluate(()=>[...document.querySelectorAll('.node')].every(n=>!n.classList.contains('locked'))),'open-all unlocks every node');
 
  // 8. persistence
- const prePlays=await p.evaluate(()=>__plays);
- await p.reload();await p.waitForTimeout(300);
+ await reloadPage(300);
  ok(!(await p.$('#welcomeName')),'no welcome after reload');
  ok((await p.textContent('.hero h1')).includes('Marco'),'name persists');
  ok(await bg()==='rgb(12, 15, 30)','theme persists');
  ok(await p.evaluate(()=>S.set.voice==='m'),'voice persists');
 
  // 9. every play() resolved
- const allPlays=prePlays.concat(await p.evaluate(()=>__plays));
+ const allPlays=archive.concat(await p.evaluate(()=>__plays));
  const failedPlays=allPlays.filter(x=>x.ok===false);
  console.log('  total play() calls',allPlays.length,'failed',failedPlays.length);
  ok(!failedPlays.length,'no rejected play() '+JSON.stringify(failedPlays.slice(0,3)));

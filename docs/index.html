@@ -819,7 +819,7 @@ function confirmQuit(){
   m.innerHTML=`<div class="sheet-in"><h3>Leave this level?</h3><p class="sub">Coins you've earned stay. Card progress saves when you finish the level.</p>
    <div class="foot"><button class="btn ghost" id="stay">Keep playing</button><button class="btn red" id="leave">Leave</button></div></div>`;
   document.body.append(sc,m);const close=()=>{sc.remove();m.remove()};
-  sc.onclick=close;m.querySelector("#stay").onclick=close;m.querySelector("#leave").onclick=()=>{close();document.querySelectorAll(".sheet").forEach(x=>x.remove());renderMap()};
+  sc.onclick=close;m.querySelector("#stay").onclick=close;m.querySelector("#leave").onclick=()=>{close();document.querySelectorAll(".sheet").forEach(x=>x.remove());stopSession();renderMap()};
 }
 
 function finish(){
@@ -882,7 +882,7 @@ function openSettings(){
   m.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{const k=b.dataset.k;S.set[k]=!S.set[k];b.setAttribute("aria-checked",S.set[k]);save()});
   let armed=false;const r=m.querySelector("#reset");
   r.onclick=()=>{if(!armed){armed=true;r.className="btn red";r.textContent="Tap again to erase everything";return}
-    const keep=S.set,nm=S.name;S=fresh();S.set=keep;S.name=nm;save();r.className="btn ghost";r.textContent="Progress reset";armed=false};
+    const keep=S.set,nm=S.name,why=S.why;S=fresh();S.set=keep;S.name=nm;S.why=why;save();r.className="btn ghost";r.textContent="Progress reset";armed=false};
 }
 function openHow(){
   modal(`<div class="row"><h2>How it works</h2><button class="icon-btn" data-close aria-label="Close">${I.x}</button></div>
