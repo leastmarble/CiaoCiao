@@ -31,6 +31,12 @@ const run=process.argv[2]||'1';
  await p.fill('#welcomeName','   ');ok(await p.isDisabled('#welcomeGo'),'start disabled for whitespace-only name');
  await p.press('#welcomeName','Enter');await p.waitForTimeout(100);ok(await p.isVisible('#welcomeName'),'Enter with blank name does not advance');
  ok(await p.evaluate(()=>!S.name),'blank name not saved');
+ // Enter key submits
+ await p.fill('#welcomeName','Anna');await p.press('#welcomeName','Enter');await p.waitForTimeout(200);
+ ok(!(await p.$('#welcomeName'))&&(await p.textContent('.hero h1')).includes('Anna'),'Enter in name field submits and greets');
+ // back to welcome (fresh storage), then the button path
+ await p.evaluate(()=>localStorage.clear());await p.reload();await p.waitForTimeout(400);
+ ok(await p.isVisible('#welcomeName'),'welcome again after clearing storage');
  await p.fill('#welcomeName','Giulia');ok(await p.isEnabled('#welcomeGo'),'start enabled once name typed');await p.click('#welcomeGo');await p.waitForTimeout(200);
  ok((await p.textContent('.hero h1')).includes('Giulia'),'greets entered name');
  ok(!(await p.textContent('.hero h1')).includes('Mark'),'greeting has no hard-coded Mark');
@@ -181,6 +187,7 @@ const run=process.argv[2]||'1';
  ok(await p.evaluate(()=>[...document.querySelectorAll('.node')].every(n=>!n.classList.contains('locked'))),'open-all unlocks every node');
 
  // 8. persistence
+ const prePlays=await p.evaluate(()=>__plays);
  await p.reload();await p.waitForTimeout(300);
  ok(!(await p.$('#welcomeName')),'no welcome after reload');
  ok((await p.textContent('.hero h1')).includes('Marco'),'name persists');
@@ -188,7 +195,7 @@ const run=process.argv[2]||'1';
  ok(await p.evaluate(()=>S.set.voice==='m'),'voice persists');
 
  // 9. every play() resolved
- const allPlays=await p.evaluate(()=>__plays);
+ const allPlays=prePlays.concat(await p.evaluate(()=>__plays));
  const failedPlays=allPlays.filter(x=>x.ok===false);
  console.log('  total play() calls',allPlays.length,'failed',failedPlays.length);
  ok(!failedPlays.length,'no rejected play() '+JSON.stringify(failedPlays.slice(0,3)));
