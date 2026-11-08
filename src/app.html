@@ -191,6 +191,44 @@ h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
 .str i.on{background:var(--go)}
 .mini{width:40px;height:40px;border-radius:50%;border:0;background:var(--surface-2);color:var(--sky);display:grid;place-items:center;flex:none}
 
+/* echo drill */
+.echo{display:flex;align-items:center;gap:16px;margin-top:8px;padding:12px;border-radius:20px;background:var(--surface-2)}
+.echo-btn{width:64px;height:64px;flex:none;border-radius:50%;border:0;background:var(--sky);color:#fff;display:grid;place-items:center;box-shadow:0 4px 0 var(--sky-deep);position:relative}
+.echo-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--sky-deep)}
+.echo.turn .echo-btn{background:var(--go);box-shadow:0 4px 0 var(--go-deep)}
+.echo.turn .echo-btn::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:4px solid var(--go);animation:ring var(--gap,2s) linear forwards}
+@keyframes ring{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.25)}}
+.echo-info{display:flex;flex-direction:column;gap:8px;min-width:0}
+.echo-info b{font-family:var(--display);font-weight:600;font-size:19px}
+.echo.turn .echo-info b{color:var(--go)}
+.dots{display:flex;gap:6px}
+.dots i{width:22px;height:8px;border-radius:4px;background:var(--line)}
+.dots i.on{background:var(--go)}
+.abtn.rec{background:var(--miss);color:#fff;box-shadow:0 3px 0 var(--miss-deep)}
+/* conversation */
+.scene-head h3{font-size:24px;font-weight:600}
+.scene-head .sub{margin-top:2px}
+.chat{display:flex;flex-direction:column;gap:10px}
+.bub{max-width:84%;padding:12px 16px;border-radius:22px;display:flex;flex-direction:column;gap:3px}
+.bub .bi{font-family:var(--display);font-size:20px;font-weight:500;line-height:1.25}
+.bub .be{font-size:14px;color:var(--ink-2)}
+.bub.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.bub.you{align-self:flex-end;background:var(--sky);color:#fff;border-bottom-right-radius:6px}
+.bub.you .be{color:rgba(255,255,255,.8)}
+.bub.now{box-shadow:var(--shadow)}
+.bub.them.now{cursor:pointer;border-color:var(--sky)}
+.bub.you.cue{background:var(--surface-2);color:var(--ink);border:2px dashed var(--sky)}
+.bub.you.cue .be{color:var(--ink);font-size:17px;font-weight:600}
+/* missions + why */
+.mission{margin:0 18px 18px;padding:16px;border-radius:20px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px;border:2px solid var(--c1,var(--go))}
+.r-k+h1+.r-stars+.r-grid+.mission,.result>.mission{margin:0}
+.mission p{margin:0;font-size:16px}
+.mission.done{border-color:var(--line);opacity:.85}
+.why{margin-top:6px!important;font-size:15px}
+.why b{color:var(--ink)}
+.why-opt{display:flex;flex-direction:column;gap:2px}
+.why-opt b{font-family:var(--display);font-size:20px;font-weight:600}
+.why-opt span{font-size:15px;font-weight:500;color:var(--ink-2);font-family:var(--body)}
 /* welcome */
 .welcome{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-block:24px}
 .welcome .logo{font-family:var(--display);font-weight:700;font-size:56px;letter-spacing:-1px;line-height:1}
@@ -214,28 +252,28 @@ button,.flip{touch-action:manipulation}
 /* ---------- 150 phrases, ordered for fastest conversational payoff ---------- */
 const WORLDS=[
 {it:"Primi Passi",en:"First Steps",c1:"#FF4D3A",c2:"#FF9A2E",wt:"#fff",p:[
+["Parla italiano?","Do you speak Italian?","Ask this instead of 'Do you speak English?'"],
+["Sì, parlo italiano.","Yes, I speak Italian.","Say it with confidence, even on day one"],
+["Non capisco.","I don't understand."],
+["Quanto costa?","How much is it?"],
+["Ce l'ha?","Do you have it?","Point at what you mean"],
 ["Buongiorno.","Good morning. / Hello.","Used until early afternoon"],
 ["Buonasera.","Good evening.","From late afternoon on"],
 ["Piacere di conoscerla.","Pleased to meet you.","Formal (Lei)"],
 ["Come sta?","How are you?","Formal (Lei)"],
 ["Bene, grazie. E lei?","Fine, thanks. And you?","Formal (Lei)"],
 ["Mi chiamo…","My name is…","Then add your name"],
-["Come si chiama?","What's your name?","Formal (Lei)"],
 ["Sono canadese.","I'm Canadian."],
 ["Grazie mille.","Thank you very much."],
 ["Prego.","You're welcome.","Also: 'Go ahead' / 'After you'"],
 ["Per favore.","Please."],
 ["Mi scusi.","Excuse me.","Formal (Lei)"],
 ["Mi dispiace.","I'm sorry."],
-["Sì, certo.","Yes, of course."],
 ["No, grazie.","No, thank you."],
 ["Va bene.","Okay. / That's fine."],
-["Ciao!","Hi! / Bye!","Informal: friends and colleagues you know well"],
-["Arrivederci.","Goodbye."],
-["A presto!","See you soon!"],
-["Buona giornata!","Have a nice day!"]]},
+["Arrivederci.","Goodbye."]]},
 {it:"Salvavita",en:"Lifesavers",c1:"#2F6BFF",c2:"#33B8FF",wt:"#fff",p:[
-["Parla inglese?","Do you speak English?","Formal (Lei)"],
+["Come si chiama questo?","What is this called?","Point and ask: natives love teaching you words"],
 ["Parlo un po' di italiano.","I speak a little Italian."],
 ["Non ho capito.","I didn't understand."],
 ["Può ripetere, per favore?","Could you repeat that, please?"],
@@ -248,7 +286,7 @@ const WORLDS=[
 ["Un momento, per favore.","One moment, please."],
 ["Può scriverlo?","Could you write it down?"],
 ["Dov'è il bagno?","Where is the restroom?"],
-["Quanto costa?","How much does it cost?"],
+["Mi può aiutare?","Can you help me?"],
 ["Ho una domanda.","I have a question."],
 ["Non c'è problema.","No problem."],
 ["Esatto!","Exactly!"],
@@ -373,6 +411,30 @@ const WORLDS=[
 ["Ce la facciamo!","We can do it!"]]}
 ];
 
+/* ---------- conversations: each world's boss is a real situation. t = them, y = you ---------- */
+const SCENES=[
+{title:"Al mercato",set:"A market stall. Open in Italian and buy something.",turns:[["y","Buongiorno."],["t","Come sta?"],["y","Bene, grazie. E lei?"],["t","Parla italiano?"],["y","Sì, parlo italiano."],["y","Ce l'ha?"],["t","Prego."],["y","Quanto costa?"],["y","Grazie mille."],["t","Prego."],["y","Arrivederci."]]},
+{title:"Chiedere aiuto",set:"A stranger on the street. Ask for help and keep the conversation in Italian.",turns:[["y","Mi scusi."],["t","Prego."],["y","Mi può aiutare?"],["t","Non c'è problema."],["y","Sto imparando l'italiano."],["t","Davvero?"],["y","Come si chiama questo?"],["y","Può ripetere, per favore?"],["y","Può parlare più lentamente?"],["t","Va bene."],["y","Capisco."],["y","Grazie mille."]]},
+{title:"Un aperitivo",set:"Drinks before a business dinner. Small talk with a new contact.",turns:[["t","Piacere di conoscerla."],["y","Piacere di conoscerla."],["t","Di dov'è?"],["y","Sono di Toronto."],["t","Che lavoro fa?"],["y","Sono ingegnere."],["y","Lavoro nel settore dei data center."],["t","Com'è andato il viaggio?"],["y","È la mia prima volta qui."],["y","Che bella città!"],["t","Cosa fa nel tempo libero?"],["y","Mi piace giocare a golf."],["y","È stato un piacere."],["t","Ci vediamo domani."]]},
+{title:"La riunione",set:"A project meeting with an Italian client.",turns:[["t","Possiamo cominciare?"],["y","Grazie per la disponibilità."],["y","Le presento il mio collega."],["t","Qual è l'ordine del giorno?"],["y","Le spiego."],["t","Qual è la scadenza?"],["y","Facciamo il punto della situazione."],["t","Non sono del tutto d'accordo."],["y","Ha ragione."],["t","Come procediamo?"],["y","Ci penso io."],["y","Le mando un'email."],["t","Ci sono domande?"],["y","Possiamo fissare un'altra riunione?"],["t","Sono d'accordo."],["y","Grazie a tutti."]]},
+{title:"La trattativa",set:"Negotiating a contract with a supplier.",turns:[["y","Qual è la sua proposta?"],["t","Qual è il budget?"],["y","Il prezzo è troppo alto."],["t","È la nostra migliore offerta."],["y","Possiamo ridurre i costi."],["t","Ci serve più tempo."],["y","Devo parlarne con i miei soci."],["t","Quali sono i tempi di consegna?"],["y","Dobbiamo rispettare i tempi."],["y","Mi può mandare un preventivo?"],["t","Possiamo sentirci la settimana prossima?"],["y","Affare fatto!"],["t","Non vediamo l'ora di collaborare."]]},
+{title:"Al ristorante",set:"Dinner with a client. You're the host.",turns:[["y","Buonasera."],["y","Ho prenotato a nome…"],["t","Prego."],["t","Acqua frizzante o naturale?"],["y","Il menù, per favore."],["y","Cosa mi consiglia?"],["y","Per me, la pasta."],["y","Che vino ci consiglia?"],["y","Un bicchiere di vino rosso."],["t","Buon appetito!"],["y","Facciamo un brindisi."],["t","Salute!"],["y","Era tutto buonissimo."],["y","Il conto, per favore."],["y","Offro io."],["t","Grazie per la cena."]]},
+{title:"In viaggio",set:"The train station, then your hotel.",turns:[["y","Mi scusi."],["y","Un biglietto per Milano, per favore."],["y","A che ora parte il treno?"],["y","Il treno è in orario?"],["t","Purtroppo…"],["y","Pazienza."],["y","Vorrei fare il check-in."],["y","Ho prenotato a nome…"],["t","Prego."],["y","A che ora è la colazione?"],["y","Qual è la password del Wi-Fi?"],["y","Grazie mille."]]},
+{title:"Opinioni",set:"A real conversation over coffee. Share what you think.",turns:[["t","Che ne pensa?"],["y","Secondo me…"],["y","Dipende."],["t","Penso di sì."],["y","Penso di no."],["t","Mi sembra giusto."],["y","Infatti."],["t","Comunque…"],["t","Non vedo l'ora."],["y","Magari!"],["t","In bocca al lupo!"],["y","Ce la facciamo!"]]}
+];
+/* Real-world missions: the point is to use it with people. */
+const MISSIONS=[
+"At an Italian café, deli or market, open in Italian: Buongiorno, then Ce l'ha? and Quanto costa?, then Grazie mille.",
+"Ask a native speaker to teach you one new word. Point and say Come si chiama questo? If you miss it: Può ripetere, per favore?",
+"Have a two-minute chat in Italian: say where you're from and what you do, then ask them one question back.",
+"Open or close a real meeting or call with an Italian line: Possiamo cominciare? or Grazie a tutti.",
+"Use one business line with an Italian-speaking contact, like Possiamo sentirci la settimana prossima?",
+"At an Italian restaurant, order your whole meal in Italian, from Il menù, per favore to Il conto, per favore.",
+"Ask for directions or travel info in Italian, in person or on a call: Dov'è la stazione? and Quanto ci vuole?",
+"Give a real opinion in Italian. Start with Secondo me… and keep going as long as you can."
+];
+const WHYS=[["business","Business","Build trust with Italian clients and partners"],["travel","Travel","Get around Italy and talk to locals"],["family","Family & friends","Talk with the people you care about"],["culture","The culture","Food, film, music and history in the original"]];
+
 /* ---------- model ---------- */
 const INT=[0,1,2,4,8,16,32];
 const DAY=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
@@ -385,10 +447,10 @@ WORLDS.forEach((w,wi)=>{const ids=w.p.map((_,pi)=>wi+"-"+pi);
   LV.push({key:wi+"-B",wi,type:"boss",ids});});
 
 const KEY="ciaociao.v1";
-const fresh=()=>({name:"",coins:0,cards:{},levels:{},best:0,set:{voice:"f",sfx:true,open:false,theme:"auto"}});
+const fresh=()=>({name:"",why:"",missions:{},coins:0,cards:{},levels:{},best:0,set:{voice:"f",sfx:true,open:false,theme:"auto"}});
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){S=fresh()}
-S=Object.assign(fresh(),S);S.set=Object.assign(fresh().set,S.set||{});
+S=Object.assign(fresh(),S);S.set=Object.assign(fresh().set,S.set||{});S.missions=S.missions||{};
 /* Progress: localStorage for instant load, plus the artifact's private per-user store so it survives iOS clearing site data. */
 let REMOTE=null,remoteT;
 function save(){S.at=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
@@ -430,9 +492,13 @@ function clipURL(id,g){const k=g+"_"+id;if(URLS[k])return URLS[k];const b64=AUD[
   const bin=atob(b64),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
   return URLS[k]=URL.createObjectURL(new Blob([u8],{type:"audio/mpeg"}))}
 function getPlayer(){if(!player){player=new Audio();player.preload="auto";player.setAttribute("playsinline","");player.id="voice-player";document.body.appendChild(player)}return player}
-function speak(text,slow,idOverride){
+let echoTimer=null;
+const partner=()=>S.set.voice==="f"?"m":"f";
+function speak(text,slow,idOverride,gv,onend){
+  clearTimeout(echoTimer);
   const id=idOverride||BYIT[text];if(!id)return;
-  const url=clipURL(id,S.set.voice);if(!url)return;
+  const g=gv||S.set.voice;
+  const url=clipURL(id,g);if(!url)return;
   const a=getPlayer();
   try{a.pause()}catch(e){}
   if(a.src!==url)a.src=url;
@@ -440,10 +506,31 @@ function speak(text,slow,idOverride){
   a.defaultPlaybackRate=a.playbackRate=slow?0.7:1;
   a.preservesPitch=a.webkitPreservesPitch=true;
   const rate=slow?0.7:1;a.onplaying=()=>{if(a.playbackRate!==rate)a.playbackRate=rate};
-  a.onerror=()=>{if(!useData){useData=true;for(const k in URLS)delete URLS[k];a.src=clipURL(id,S.set.voice);a.playbackRate=rate;a.play().catch(()=>{})}else toast("Audio couldn't play here")};
+  a.onerror=()=>{if(!useData){useData=true;for(const k in URLS)delete URLS[k];a.src=clipURL(id,g);a.playbackRate=rate;a.play().catch(()=>{})}else toast("Audio couldn't play here")};
+  a.onended=onend||null;
   const p=a.play();
   if(p&&p.catch)p.catch(err=>{if(err&&err.name==="NotAllowedError")toast("Tap Listen to hear it")});
-  a.dataset.last=S.set.voice+"_"+id+(slow?"_slow":"");
+  a.dataset.last=g+"_"+id+(slow?"_slow":"");
+}
+const canRec=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder);
+let recState=null,recBlocked=false;
+function stopRec(play){if(recState){recState.play=play;clearTimeout(recState.t);try{if(recState.mr.state!=="inactive")recState.mr.stop()}catch(e){}}}
+async function recordCompare(btn,c){
+  if(recState){stopRec(true);return}
+  try{getPlayer().pause()}catch(e){}clearTimeout(echoTimer);
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){recBlocked=true;btn.hidden=true;toast("Microphone isn't available here");return}
+  const type=["audio/mp4","audio/webm","audio/aac"].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
+  let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type}:undefined)}catch(e){stream.getTracks().forEach(t=>t.stop());recBlocked=true;btn.hidden=true;toast("Recording isn't supported here");return}
+  const chunks=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  recState={mr,play:true};
+  mr.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const st=recState;recState=null;
+    if(!document.body.contains(btn))return;btn.classList.remove("rec");btn.innerHTML=I.mic+" Record again";
+    if(!st||!st.play||!chunks.length)return;
+    const u=URL.createObjectURL(new Blob(chunks,{type:mr.mimeType||type||"audio/mp4"})),a=getPlayer();
+    a.onended=()=>{a.onended=null;echoTimer=setTimeout(()=>speak(c.it),300)};a.defaultPlaybackRate=a.playbackRate=1;a.src=u;
+    a.play().catch(()=>{});a.dataset.last="rec";toast("You first, then the native speaker")};
+  mr.start();recState.t=setTimeout(()=>stopRec(true),8000);
+  btn.classList.add("rec");btn.innerHTML=I.stop+" Stop";
 }
 function voiceNote(){return"Woman: Sara · Man: Nicola. No sound? Check your volume and the silent switch."}
 let toastT;function toast(msg){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),2200)}
@@ -467,6 +554,8 @@ const I={
  lock:'<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>',
  crown:'<svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><path d="M3 8l4.6 4L12 4.5l4.4 7.5L21 8l-1.8 10.5H4.8z" fill="currentColor"/></svg>',
  flag:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 22V3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M7 3.5h12l-3.2 4.3L19 12H7z" fill="currentColor"/></svg>',
+ stop:'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5" fill="currentColor"/></svg>',
+ mic:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
  mouth:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:none;margin-top:1px"><path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>'
 };
 const star=(on,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" class="star ${on?"on":""}" aria-hidden="true"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.6L12 17.5l-5.9 3.2 1.2-6.6L2.5 9.5l6.6-.9z"/></svg>`;
@@ -482,7 +571,7 @@ const ROW=106,XS=i=>Math.round(Math.sin(i*1.25)*78);
 function greet(){const h=new Date().getHours();return h<13?"Buongiorno":h<18?"Buon pomeriggio":"Buonasera"}
 function renderMap(){
   stopSession();
-  if(!S.name)return renderWelcome();
+  if(!S.name||!S.why)return renderWelcome();
   const due=dueCards().length,seen=seenCount(),ci=curIndex(),cl=LV[ci];
   const cw=WORLDS[cl.wi],clabel=cl.type==="boss"?"Boss":"Livello "+cl.n;
   app.innerHTML=`
@@ -490,7 +579,8 @@ function renderMap(){
     <div class="top-r">${coinPill()}<button class="icon-btn" id="btnSet" aria-label="Settings">${I.set}</button></div></header>
   <div class="scroll" id="scroll">
     <section class="hero">
-      <div><h1>${greet()}, ${esc(S.name)}</h1><p>150 phrases across 8 worlds. Misses never stop you; they just come back for another try.</p></div>
+      <div><h1>${greet()}, ${esc(S.name)}</h1><p>Speak first, echo the voice, then go use it with real people. Mistakes are part of it.</p>
+        ${whyLabel()?`<p class="why">Il tuo perché · <b>${esc(whyLabel())}</b></p>`:""}</div>
       <div class="stats">
         <div class="stat"><b>${seen}<small style="font-size:14px;color:var(--ink-2)">/150</small></b><span>Learned</span></div>
         <div class="stat"><b>${mastered()}</b><span>Mastered</span></div>
@@ -510,9 +600,17 @@ function renderMap(){
   document.getElementById("btnHow").onclick=openHow;
   document.getElementById("btnGo").onclick=()=>startLevel(ci);
   const r=document.getElementById("btnRev");if(r)r.onclick=startReview;
+  wireMissions(app);
   app.querySelectorAll(".node").forEach(n=>n.onclick=()=>{const i=+n.dataset.i;if(unlocked(i))startLevel(i);else SFX.bad()});
   if(seen){const cur=app.querySelector(".node.cur");if(cur){const sc=document.getElementById("scroll");sc.scrollTop=Math.max(0,cur.offsetTop+cur.closest(".world").offsetTop-sc.clientHeight/2)}}
 }
+function whyLabel(){const w=WHYS.find(x=>x[0]===S.why);return w?w[1]:""}
+function missionHTML(wi){const done=!!S.missions[wi];
+  return `<div class="mission ${done?"done":""}"><div class="lbl">Real-world mission</div><p>${esc(MISSIONS[wi])}</p>
+    <button class="btn ${done?"ghost":""}" data-mission="${wi}" ${done?"disabled":""}>${done?"Mission complete":"I did it! <small>· +50 coins</small>"}</button></div>`}
+function wireMissions(root){root.querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>{const wi=+b.dataset.mission;if(S.missions[wi])return;
+  S.missions[wi]=true;S.coins+=50;save();SFX.clear();toast("Bravissimo! That's how fluency happens.");
+  const box=b.closest(".mission");box.outerHTML=missionHTML(wi);const c=document.getElementById("coinN");if(c)c.textContent=S.coins.toLocaleString()})}
 function worldHTML(w,wi){
   const idx=LV.map((l,i)=>[l,i]).filter(([l])=>l.wi===wi),ci=curIndex();
   const ids=w.p.map((_,pi)=>wi+"-"+pi),locked=!unlocked(idx[0][1]);
@@ -527,6 +625,7 @@ function worldHTML(w,wi){
   return `<section class="world ${locked?"dim":""}" style="--c1:${w.c1};--c2:${w.c2};--wt:${w.wt}">
     <div class="world-head"><div><div class="eb">Mondo ${wi+1}</div><h2>${esc(w.it)}</h2><p>${esc(w.en)}</p></div><div class="wprog">${seenCount(ids)}/${ids.length}</div></div>
     <div class="path" style="height:${H}px"><svg width="320" height="${H}" viewBox="0 0 320 ${H}" aria-hidden="true"><path d="${d}" fill="none" stroke="${w.c1}" stroke-opacity=".35" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 14"/></svg>${nodes}</div>
+    ${cleared(wi+"-B")?missionHTML(wi):""}
   </section>`;
 }
 
@@ -534,26 +633,26 @@ function worldHTML(w,wi){
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const canBuild=c=>c.words.length>=3;
 const T=(c,mode)=>({c,mode,att:0});
-function hardMode(c){const r=Math.random();if(canBuild(c)&&r<.45)return"build";if(r<.78)return"recall";return"listen"}
+function hardMode(c){const r=Math.random();if(canBuild(c)&&r<.2)return"build";if(r<.75)return"recall";return"listen"}
 function reviewPool(exclude,n){const t=DAY();
   const seen=CARDS.filter(c=>S.cards[c.id]&&!exclude.includes(c.id)).sort((a,b)=>(S.cards[a.id].d-S.cards[b.id].d)||(S.cards[a.id].b-S.cards[b.id].b));
   return shuffle(seen.slice(0,n*2)).slice(0,n)}
 let sess=null;
-function stopSession(){sess=null;try{player&&player.pause()}catch(e){}}
+function stopSession(){sess=null;clearTimeout(echoTimer);stopRec(false);try{player&&player.pause()}catch(e){}}
 function startLevel(i){
   const lv=LV[i];let tasks=[];
   if(lv.type==="lvl"){
     const news=lv.ids.map(id=>BYID[id]);
-    news.forEach((c,k)=>{if(!S.cards[c.id])tasks.push(T(c,"learn"));if(k>0)tasks.push(T(news[k-1],k%2?"choice":"listen"))});
-    tasks.push(T(news[news.length-1],"choice"));
+    news.forEach((c,k)=>{if(!S.cards[c.id])tasks.push(T(c,"learn"));if(k>0)tasks.push(T(news[k-1],k%2?"listen":"choice"))});
+    tasks.push(T(news[news.length-1],"listen"));
     const rev=reviewPool(lv.ids,3);
-    tasks=tasks.concat(shuffle([...news.map(c=>T(c,canBuild(c)?"build":"recall")),...rev.map(c=>T(c,hardMode(c)))]));
-  }else{
-    const own=shuffle(lv.ids).slice(0,7).map(id=>BYID[id]),rev=reviewPool(lv.ids,3);
-    own.filter(c=>!S.cards[c.id]).forEach(c=>tasks.push(T(c,"learn")));
-    tasks=tasks.concat(shuffle([...own,...rev]).map(c=>T(c,hardMode(c))));
+    tasks=tasks.concat(shuffle([...news.map(c=>T(c,"recall")),...rev.map(c=>T(c,hardMode(c)))]));
+    return begin({kind:lv.type,li:i,tasks});
   }
-  begin({kind:lv.type,li:i,tasks});
+  /* Boss = a real conversation built from this world's phrases */
+  const sc=SCENES[lv.wi];
+  tasks=sc.turns.map(([w,it])=>({c:BYID[BYIT[it]],mode:w==="t"?"them":"you",att:0}));
+  begin({kind:lv.type,li:i,tasks,scene:sc,log:[]});
 }
 function startReview(){
   let pool=shuffle(dueCards()).slice(0,12);
@@ -582,12 +681,46 @@ function showTask(){
   const t=s.tasks[s.i],c=t.c,st=document.getElementById("stage");
   const sayBtns=`<div class="audio-row"><button class="abtn" data-say>${I.spk} Listen</button><button class="abtn alt" data-slow>Slow</button></div>`;
   if(t.mode==="learn"){
-    st.innerHTML=`${headRow("New phrase","new")}
-    <div class="card"><div class="it-big">${esc(c.it)}</div><div class="en">${esc(c.en)}</div>${c.note?`<span class="tag">${esc(c.note)}</span>`:""}${sayBtns}</div>
-    <p class="coach">${I.mouth}<span><b>Say it out loud 3 times.</b> Copy the rhythm and the melody, not just the words. Speaking it locks it in far faster than reading.</span></p>
+    st.innerHTML=`${headRow("Echo it","new")}
+    <div class="card"><div class="it-big">${esc(c.it)}</div><div class="en">${esc(c.en)}</div>${c.note?`<span class="tag">${esc(c.note)}</span>`:""}
+      <div class="echo" id="echo"><button class="echo-btn" id="echoBtn" aria-label="Start the echo drill again">${I.spk}</button>
+        <div class="echo-info"><b id="echoMsg">Listen…</b><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div></div></div>
+      <div class="audio-row"><button class="abtn alt" data-say>${I.spk} Listen</button><button class="abtn alt" data-slow>Slow</button>${canRec&&!recBlocked?`<button class="abtn alt" id="recBtn">${I.mic} Record and compare</button>`:""}</div>
+    </div>
+    <p class="coach">${I.mouth}<span><b>Echo, don't memorize.</b> Say it right after the voice, three times, copying its melody.</span></p>
     <div class="foot"><button class="btn" id="next">Got it</button></div>`;
-    speak(c.it);
-    document.getElementById("next").onclick=()=>{SFX.tap();s.i++;showTask()};
+    const ec=document.getElementById("echo"),dots=ec.querySelectorAll(".dots i"),msg=document.getElementById("echoMsg");let round=0;
+    const live=()=>sess===s&&s.tasks[s.i]===t&&document.body.contains(ec);
+    const playRound=()=>{if(!live())return;msg.textContent="Listen…";ec.classList.remove("turn");
+      speak(c.it,false,null,null,()=>{if(!live())return;const d=getPlayer().duration,gap=Math.min(6000,Math.max(1800,(isFinite(d)?d:2)*1300+700));
+        msg.textContent="Your turn. Say it!";ec.style.setProperty("--gap",gap+"ms");ec.classList.add("turn");
+        echoTimer=setTimeout(()=>{if(!live())return;ec.classList.remove("turn");dots[round].classList.add("on");round++;
+          if(round<3)playRound();else msg.textContent="Bravo! Tap to echo again."},gap)})};
+    document.getElementById("echoBtn").onclick=()=>{round=0;dots.forEach(d=>d.classList.remove("on"));playRound()};
+    const rb=document.getElementById("recBtn");if(rb)rb.onclick=()=>recordCompare(rb,c);
+    playRound();
+    document.getElementById("next").onclick=()=>{stopRec(false);SFX.tap();s.i++;showTask()};
+  }else if(t.mode==="them"||t.mode==="you"){
+    const sc=s.scene,bub=b=>`<div class="bub ${b.w}"><div class="bi">${esc(b.it)}</div><div class="be">${esc(b.en)}</div></div>`;
+    const head=`<div class="mode-row"><span class="chip">Conversation</span>${voiceSeg(true)}</div><div class="scene-head"><h3>${esc(sc.title)}</h3><p class="sub">${esc(sc.set)}</p></div>`;
+    const log=`<div class="chat" id="chat">${s.log.map(bub).join("")}`;
+    if(t.mode==="them"){
+      st.innerHTML=`${head}${log}<div class="bub them now"><div class="bi">${esc(c.it)}</div><div class="be" id="themEn" hidden>${esc(c.en)}</div></div></div>
+        <div class="foot"><button class="btn ghost" id="huh">Didn't catch it</button><button class="btn" id="ok">Capito!</button></div>`;
+      speak(c.it,false,null,partner());let helped=false;
+      document.getElementById("huh").onclick=()=>{helped=true;document.getElementById("themEn").hidden=false;speak(c.it,true,null,partner());scrollChat()};
+      document.getElementById("ok").onclick=()=>{s.log.push({w:"them",it:c.it,en:c.en});s.ids.add(c.id);
+        if(helped)s.miss[c.id]=(s.miss[c.id]||0)+1;else{s.coins+=5;S.coins+=5;save();popCoins(5)}SFX.tap();s.i++;showTask()};
+      st.querySelectorAll(".bub.them.now").forEach(b=>b.onclick=()=>speak(c.it,false,null,partner()));
+    }else{
+      st.innerHTML=`${head}${log}<div class="bub you now cue" id="cue"><div class="be">Say: ${esc(c.en)}</div><div class="bi" id="youIt" hidden>${esc(c.it)}</div></div></div>
+        <div class="foot" id="rf"><button class="btn sky" id="reveal">I said it. Check</button></div>`;
+      document.getElementById("reveal").onclick=()=>{document.getElementById("youIt").hidden=false;document.getElementById("cue").classList.remove("cue");speak(c.it);scrollChat();
+        document.getElementById("rf").innerHTML=`<button class="btn red" id="no">Missed it</button><button class="btn" id="yes">Got it</button>`;
+        document.getElementById("no").onclick=e=>judge(false,e.currentTarget,true);
+        document.getElementById("yes").onclick=e=>{s.log.push({w:"you",it:c.it,en:c.en});judge(true,e.currentTarget,true)}};
+    }
+    scrollChat();
   }else if(t.mode==="choice"){
     const opts=shuffle([c,...pickOthers(c,"it",3)]);
     st.innerHTML=`${headRow("Pick the Italian")}<div class="ask">${esc(c.en)}</div>
@@ -651,18 +784,20 @@ function judge(ok,fromEl,quick){
     s.coins+=gain;S.coins+=gain;save();SFX.good();popCoins(gain);
   }else{
     s.combo=0;s.miss[c.id]=(s.miss[c.id]||0)+1;SFX.bad();
-    s.tasks.splice(Math.min(s.i+3,s.tasks.length),0,{c,mode:t.mode,att:t.att+1});
+    s.tasks.splice(t.mode==="you"?s.i+1:Math.min(s.i+3,s.tasks.length),0,{c,mode:t.mode,att:t.att+1});
+    if(t.mode==="you")toast("Listen once more, then try it again");
   }
   if(quick){s.i++;return showTask()}
   const sh=document.createElement("div");sh.className="sheet "+(ok?"good":"bad");
   sh.innerHTML=`<div class="sheet-in"><h3>${ok?GOOD[Math.random()*GOOD.length|0]:"Quasi!"}</h3>
-    ${ok?`<div class="ans">${esc(c.it)}</div><div class="ans-en">${esc(c.en)}</div>`:`<div class="ans">${esc(c.it)}</div><div class="ans-en">${esc(c.en)} · This one comes back in a moment. Try again.</div>`}
+    ${ok?`<div class="ans">${esc(c.it)}</div><div class="ans-en">${esc(c.en)}</div>`:`<div class="ans">${esc(c.it)}</div><div class="ans-en">${esc(c.en)} · Mistakes are how you learn. It comes back in a moment.</div>`}
     <div class="foot"><button class="btn ghost" data-say style="flex:0 0 64px;padding:0" aria-label="Hear it again">${I.spk}</button><button class="btn ${ok?"":"red"}" id="cont">Continue</button></div></div>`;
   document.body.appendChild(sh);
   sh.querySelector("[data-say]").onclick=()=>speak(c.it);
   const go=()=>{sh.remove();s.i++;showTask()};
   sh.querySelector("#cont").onclick=go;sh.querySelector("#cont").focus();
 }
+function scrollChat(){const st=document.getElementById("stage");if(st)requestAnimationFrame(()=>{st.scrollTop=st.scrollHeight})}
 function popCoins(n){const c=document.getElementById("coins");if(!c)return;document.getElementById("coinN").textContent=S.coins.toLocaleString();
   const r=c.getBoundingClientRect(),p=document.createElement("div");p.className="pop";p.textContent="+"+n;p.style.left=(r.left+12)+"px";p.style.top=(r.bottom)+"px";
   document.body.appendChild(p);setTimeout(()=>p.remove(),950)}
@@ -695,12 +830,14 @@ function finish(){
       <div class="stat"><b>${acc}%</b><span>First try</span></div>
       <div class="stat"><b>×${done.best}</b><span>Best combo</span></div>
     </div>
+    ${done.scene?missionHTML(LV[done.li].wi):""}
     <div class="r-list">${list.map(c=>{const b=(S.cards[c.id]||{b:0}).b;return `<div class="r-item"><div class="t"><b>${esc(c.it)}</b><span>${esc(c.en)}</span>
       <div class="str" aria-label="Strength ${b} of 6">${[1,2,3,4,5,6].map(k=>`<i class="${k<=b?"on":""}"></i>`).join("")}</div></div>
       <button class="mini" data-id="${c.id}" aria-label="Hear ${esc(c.it)}">${I.spk}</button></div>`}).join("")}</div>
     <div class="btns">${nextI>=0?`<button class="btn" id="nx">Next level</button>`:""}<button class="btn ${nextI>=0?"ghost":""}" id="mp">World map</button></div>
   </div>`;
   app.querySelectorAll(".mini").forEach(b=>b.onclick=()=>speak(BYID[b.dataset.id].it));
+  wireMissions(app);
   const nx=document.getElementById("nx");if(nx)nx.onclick=()=>startLevel(nextI);
   document.getElementById("mp").onclick=renderMap;
   confetti(document.getElementById("cf"));
@@ -738,16 +875,27 @@ function openSettings(){
 function openHow(){
   modal(`<div class="row"><h2>How it works</h2><button class="icon-btn" data-close aria-label="Close">${I.x}</button></div>
   <ul class="how-list">
-    <li><b>Most useful phrases first</b><span>Survival and conversation phrases come early, so you can hold a real exchange within days, not months.</span></li>
-    <li><b>Say it before you see it</b><span>Recall cards show the English and ask you to produce the Italian. Pulling an answer from memory builds it far faster than rereading.</span></li>
-    <li><b>Out loud, every time</b><span>Saying each phrase trains your mouth and ear together. Copy the voice's rhythm.</span></li>
-    <li><b>Spaced repetition</b><span>Nail a phrase and it returns in 1, 2, 4, 8, 16, then 32 days. Miss it and it comes back tomorrow. Review only what's due.</span></li>
-    <li><b>Mixed practice</b><span>Every level blends in older phrases, and boss levels mix the whole world. Switching it up feels harder and sticks better.</span></li>
-    <li><b>Unlimited tries</b><span>A miss sends the card a few turns back. Keep going until it lands. First-try answers and combos earn the most coins.</span></li>
+    <li><b>Speak from day one</b><span>You start with the five lines you'll use most: Parla italiano? Sì, parlo italiano. Non capisco. Quanto costa? Ce l'ha?</span></li>
+    <li><b>Echo, don't memorize</b><span>Every new phrase is an echo drill: listen, then say it right after the voice, three times, copying the melody. Record yourself to compare.</span></li>
+    <li><b>Real situations</b><span>Each world is a place you'll actually be: a market, a meeting, a dinner. Its boss level is a full conversation where you answer out loud.</span></li>
+    <li><b>Go use it</b><span>Clear a world and you unlock a real-world mission. People appreciate the effort, and nobody minds mistakes.</span></li>
+    <li><b>Never fall back to English</b><span>Ask "Parla italiano?" and "Come si chiama questo?" so natives keep you in Italian and teach you as you go.</span></li>
+    <li><b>Keep it with spaced review</b><span>Phrases you nail come back in 1, 2, 4, 8, 16, then 32 days. Misses come back tomorrow. Unlimited tries, always.</span></li>
+    <li><b>Know your why</b><span>A strong reason keeps you going on the hard days. Yours is on the home screen.</span></li>
   </ul>`);
 }
 
 function renderWelcome(){
+  if(S.name&&!S.why){
+    app.innerHTML=`<div class="welcome">
+      <div class="logo" aria-label="CiaoCiao"><span class="a">Ciao</span><span class="b">Ciao</span></div>
+      <div><h1>Perché l'italiano?</h1><p class="sub">Why are you learning, ${esc(S.name)}? A strong reason keeps you going on the hard days.</p></div>
+      <div class="opts">${WHYS.map(w=>`<button class="opt why-opt" data-why="${w[0]}"><b>${esc(w[1])}</b><span>${esc(w[2])}</span></button>`).join("")}</div>
+      <button class="how" id="whySkip">Skip for now</button></div>`;
+    app.querySelectorAll("[data-why]").forEach(b=>b.onclick=()=>{S.why=b.dataset.why;save();SFX.tap();renderMap()});
+    document.getElementById("whySkip").onclick=()=>{S.why="skip";save();renderMap()};
+    return;
+  }
   app.innerHTML=`<div class="welcome">
     <div class="logo" aria-label="CiaoCiao"><span class="a">Ciao</span><span class="b">Ciao</span></div>
     <div class="bubbles" aria-hidden="true">${WORLDS.slice(0,6).map((w,i)=>`<span style="background:linear-gradient(135deg,${w.c1},${w.c2});color:${w.wt}">${esc(w.p[i===1?3:0][0])}</span>`).join("")}</div>
