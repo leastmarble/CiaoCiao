@@ -1,0 +1,602 @@
+[
+ {
+  "id": "0-0",
+  "it": "Buongiorno."
+ },
+ {
+  "id": "0-1",
+  "it": "Buonasera."
+ },
+ {
+  "id": "0-2",
+  "it": "Piacere di conoscerla."
+ },
+ {
+  "id": "0-3",
+  "it": "Come sta?"
+ },
+ {
+  "id": "0-4",
+  "it": "Bene, grazie. E lei?"
+ },
+ {
+  "id": "0-5",
+  "it": "Mi chiamo…"
+ },
+ {
+  "id": "0-6",
+  "it": "Come si chiama?"
+ },
+ {
+  "id": "0-7",
+  "it": "Sono canadese."
+ },
+ {
+  "id": "0-8",
+  "it": "Grazie mille."
+ },
+ {
+  "id": "0-9",
+  "it": "Prego."
+ },
+ {
+  "id": "0-10",
+  "it": "Per favore."
+ },
+ {
+  "id": "0-11",
+  "it": "Mi scusi."
+ },
+ {
+  "id": "0-12",
+  "it": "Mi dispiace."
+ },
+ {
+  "id": "0-13",
+  "it": "Sì, certo."
+ },
+ {
+  "id": "0-14",
+  "it": "No, grazie."
+ },
+ {
+  "id": "0-15",
+  "it": "Va bene."
+ },
+ {
+  "id": "0-16",
+  "it": "Ciao!"
+ },
+ {
+  "id": "0-17",
+  "it": "Arrivederci."
+ },
+ {
+  "id": "0-18",
+  "it": "A presto!"
+ },
+ {
+  "id": "0-19",
+  "it": "Buona giornata!"
+ },
+ {
+  "id": "1-0",
+  "it": "Parla inglese?"
+ },
+ {
+  "id": "1-1",
+  "it": "Parlo un po' di italiano."
+ },
+ {
+  "id": "1-2",
+  "it": "Non ho capito."
+ },
+ {
+  "id": "1-3",
+  "it": "Può ripetere, per favore?"
+ },
+ {
+  "id": "1-4",
+  "it": "Può parlare più lentamente?"
+ },
+ {
+  "id": "1-5",
+  "it": "Come si dice in italiano?"
+ },
+ {
+  "id": "1-6",
+  "it": "Cosa significa?"
+ },
+ {
+  "id": "1-7",
+  "it": "Sto imparando l'italiano."
+ },
+ {
+  "id": "1-8",
+  "it": "Non lo so."
+ },
+ {
+  "id": "1-9",
+  "it": "Capisco."
+ },
+ {
+  "id": "1-10",
+  "it": "Un momento, per favore."
+ },
+ {
+  "id": "1-11",
+  "it": "Può scriverlo?"
+ },
+ {
+  "id": "1-12",
+  "it": "Dov'è il bagno?"
+ },
+ {
+  "id": "1-13",
+  "it": "Quanto costa?"
+ },
+ {
+  "id": "1-14",
+  "it": "Ho una domanda."
+ },
+ {
+  "id": "1-15",
+  "it": "Non c'è problema."
+ },
+ {
+  "id": "1-16",
+  "it": "Esatto!"
+ },
+ {
+  "id": "1-17",
+  "it": "Davvero?"
+ },
+ {
+  "id": "1-18",
+  "it": "Allora…"
+ },
+ {
+  "id": "1-19",
+  "it": "Cioè…"
+ },
+ {
+  "id": "2-0",
+  "it": "Di dov'è?"
+ },
+ {
+  "id": "2-1",
+  "it": "Sono di Toronto."
+ },
+ {
+  "id": "2-2",
+  "it": "Che lavoro fa?"
+ },
+ {
+  "id": "2-3",
+  "it": "Sono ingegnere."
+ },
+ {
+  "id": "2-4",
+  "it": "Lavoro nel settore dei data center."
+ },
+ {
+  "id": "2-5",
+  "it": "Mi piace molto l'Italia."
+ },
+ {
+  "id": "2-6",
+  "it": "Cosa fa nel tempo libero?"
+ },
+ {
+  "id": "2-7",
+  "it": "Mi piace giocare a golf."
+ },
+ {
+  "id": "2-8",
+  "it": "Che tempo fa oggi?"
+ },
+ {
+  "id": "2-9",
+  "it": "Fa bel tempo."
+ },
+ {
+  "id": "2-10",
+  "it": "Com'è andato il viaggio?"
+ },
+ {
+  "id": "2-11",
+  "it": "È stato un piacere."
+ },
+ {
+  "id": "2-12",
+  "it": "Da quanto tempo vive qui?"
+ },
+ {
+  "id": "2-13",
+  "it": "Che bella città!"
+ },
+ {
+  "id": "2-14",
+  "it": "Le piace il calcio?"
+ },
+ {
+  "id": "2-15",
+  "it": "Parla molto bene l'inglese."
+ },
+ {
+  "id": "2-16",
+  "it": "Cosa mi consiglia di visitare?"
+ },
+ {
+  "id": "2-17",
+  "it": "Cosa ha fatto nel fine settimana?"
+ },
+ {
+  "id": "2-18",
+  "it": "Sono molto contento di essere qui."
+ },
+ {
+  "id": "2-19",
+  "it": "Ci vediamo domani."
+ },
+ {
+  "id": "3-0",
+  "it": "Possiamo cominciare?"
+ },
+ {
+  "id": "3-1",
+  "it": "Grazie per il suo tempo."
+ },
+ {
+  "id": "3-2",
+  "it": "Qual è l'ordine del giorno?"
+ },
+ {
+  "id": "3-3",
+  "it": "Le presento il mio collega."
+ },
+ {
+  "id": "3-4",
+  "it": "Ho una riunione alle dieci."
+ },
+ {
+  "id": "3-5",
+  "it": "Sono d'accordo."
+ },
+ {
+  "id": "3-6",
+  "it": "Non sono d'accordo."
+ },
+ {
+  "id": "3-7",
+  "it": "Ha ragione."
+ },
+ {
+  "id": "3-8",
+  "it": "Mi permetta di spiegare."
+ },
+ {
+  "id": "3-9",
+  "it": "È una buona idea."
+ },
+ {
+  "id": "3-10",
+  "it": "Qual è la scadenza?"
+ },
+ {
+  "id": "3-11",
+  "it": "Quali sono i prossimi passi?"
+ },
+ {
+  "id": "3-12",
+  "it": "Ci penso io."
+ },
+ {
+  "id": "3-13",
+  "it": "Le mando un'email."
+ },
+ {
+  "id": "3-14",
+  "it": "Possiamo fissare un'altra riunione?"
+ },
+ {
+  "id": "3-15",
+  "it": "Facciamo il punto della situazione."
+ },
+ {
+  "id": "3-16",
+  "it": "Ha qualche domanda?"
+ },
+ {
+  "id": "3-17",
+  "it": "Le faccio sapere."
+ },
+ {
+  "id": "3-18",
+  "it": "Riassumendo…"
+ },
+ {
+  "id": "3-19",
+  "it": "Grazie a tutti."
+ },
+ {
+  "id": "4-0",
+  "it": "Qual è la sua proposta?"
+ },
+ {
+  "id": "4-1",
+  "it": "Qual è il budget?"
+ },
+ {
+  "id": "4-2",
+  "it": "Possiamo trovare un accordo."
+ },
+ {
+  "id": "4-3",
+  "it": "Il prezzo è troppo alto."
+ },
+ {
+  "id": "4-4",
+  "it": "È la nostra migliore offerta."
+ },
+ {
+  "id": "4-5",
+  "it": "Ci serve più tempo."
+ },
+ {
+  "id": "4-6",
+  "it": "Devo parlarne con i miei soci."
+ },
+ {
+  "id": "4-7",
+  "it": "Possiamo ridurre i costi."
+ },
+ {
+  "id": "4-8",
+  "it": "Quali sono i tempi di consegna?"
+ },
+ {
+  "id": "4-9",
+  "it": "Dobbiamo rispettare i tempi."
+ },
+ {
+  "id": "4-10",
+  "it": "Il progetto è nei tempi."
+ },
+ {
+  "id": "4-11",
+  "it": "Il progetto è in ritardo."
+ },
+ {
+  "id": "4-12",
+  "it": "Siamo un'azienda di ingegneria."
+ },
+ {
+  "id": "4-13",
+  "it": "Abbiamo molta esperienza in questo settore."
+ },
+ {
+  "id": "4-14",
+  "it": "Qual è la potenza richiesta?"
+ },
+ {
+  "id": "4-15",
+  "it": "Mi manda il contratto?"
+ },
+ {
+  "id": "4-16",
+  "it": "Posso farle una domanda?"
+ },
+ {
+  "id": "4-17",
+  "it": "Firmiamo domani."
+ },
+ {
+  "id": "4-18",
+  "it": "Affare fatto!"
+ },
+ {
+  "id": "4-19",
+  "it": "Non vediamo l'ora di collaborare."
+ },
+ {
+  "id": "5-0",
+  "it": "Un tavolo per due, per favore."
+ },
+ {
+  "id": "5-1",
+  "it": "Ho una prenotazione."
+ },
+ {
+  "id": "5-2",
+  "it": "Il menù, per favore."
+ },
+ {
+  "id": "5-3",
+  "it": "Cosa mi consiglia?"
+ },
+ {
+  "id": "5-4",
+  "it": "Vorrei un caffè."
+ },
+ {
+  "id": "5-5",
+  "it": "Per me, la pasta."
+ },
+ {
+  "id": "5-6",
+  "it": "Un bicchiere di vino rosso."
+ },
+ {
+  "id": "5-7",
+  "it": "Acqua frizzante o naturale?"
+ },
+ {
+  "id": "5-8",
+  "it": "Che cosa c'è di buono oggi?"
+ },
+ {
+  "id": "5-9",
+  "it": "È piccante?"
+ },
+ {
+  "id": "5-10",
+  "it": "Buon appetito!"
+ },
+ {
+  "id": "5-11",
+  "it": "Salute!"
+ },
+ {
+  "id": "5-12",
+  "it": "Facciamo un brindisi."
+ },
+ {
+  "id": "5-13",
+  "it": "Un altro, per favore."
+ },
+ {
+  "id": "5-14",
+  "it": "Era tutto buonissimo."
+ },
+ {
+  "id": "5-15",
+  "it": "Il conto, per favore."
+ },
+ {
+  "id": "5-16",
+  "it": "Offro io."
+ },
+ {
+  "id": "5-17",
+  "it": "Possiamo pagare separatamente?"
+ },
+ {
+  "id": "5-18",
+  "it": "Posso pagare con la carta?"
+ },
+ {
+  "id": "5-19",
+  "it": "Grazie per la cena."
+ },
+ {
+  "id": "6-0",
+  "it": "Dov'è la stazione?"
+ },
+ {
+  "id": "6-1",
+  "it": "A che ora parte il treno?"
+ },
+ {
+  "id": "6-2",
+  "it": "Un biglietto per Milano, per favore."
+ },
+ {
+  "id": "6-3",
+  "it": "Dove posso prendere un taxi?"
+ },
+ {
+  "id": "6-4",
+  "it": "Può portarmi a questo indirizzo?"
+ },
+ {
+  "id": "6-5",
+  "it": "È lontano da qui?"
+ },
+ {
+  "id": "6-6",
+  "it": "Quanto ci vuole?"
+ },
+ {
+  "id": "6-7",
+  "it": "Mi sono perso."
+ },
+ {
+  "id": "6-8",
+  "it": "Vorrei fare il check-in."
+ },
+ {
+  "id": "6-9",
+  "it": "A che ora è la colazione?"
+ },
+ {
+  "id": "6-10",
+  "it": "Qual è la password del Wi-Fi?"
+ },
+ {
+  "id": "6-11",
+  "it": "Il volo è in ritardo."
+ },
+ {
+  "id": "6-12",
+  "it": "Ho perso la valigia."
+ },
+ {
+  "id": "6-13",
+  "it": "Dov'è l'uscita?"
+ },
+ {
+  "id": "6-14",
+  "it": "Mi può chiamare un taxi?"
+ },
+ {
+  "id": "7-0",
+  "it": "Secondo me…"
+ },
+ {
+  "id": "7-1",
+  "it": "Penso di sì."
+ },
+ {
+  "id": "7-2",
+  "it": "Penso di no."
+ },
+ {
+  "id": "7-3",
+  "it": "Dipende."
+ },
+ {
+  "id": "7-4",
+  "it": "Che ne pensa?"
+ },
+ {
+  "id": "7-5",
+  "it": "Mi sembra giusto."
+ },
+ {
+  "id": "7-6",
+  "it": "Purtroppo…"
+ },
+ {
+  "id": "7-7",
+  "it": "Comunque…"
+ },
+ {
+  "id": "7-8",
+  "it": "Infatti."
+ },
+ {
+  "id": "7-9",
+  "it": "Magari!"
+ },
+ {
+  "id": "7-10",
+  "it": "Meno male!"
+ },
+ {
+  "id": "7-11",
+  "it": "Pazienza."
+ },
+ {
+  "id": "7-12",
+  "it": "Non vedo l'ora."
+ },
+ {
+  "id": "7-13",
+  "it": "In bocca al lupo!"
+ },
+ {
+  "id": "7-14",
+  "it": "Ce la facciamo!"
+ }
+]
